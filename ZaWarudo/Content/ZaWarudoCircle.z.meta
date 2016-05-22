@@ -1,0 +1,8 @@
+TextContent = 
+{
+	ZilchScriptBuilder = 
+	{
+		string Name = "ZaWarudoCircle",
+		uint64 ResourceId = 579f68ea422f1bb5,
+	},
+},

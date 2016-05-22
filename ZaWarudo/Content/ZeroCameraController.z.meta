@@ -1,0 +1,8 @@
+TextContent = 
+{
+	ZilchScriptBuilder = 
+	{
+		string Name = "ZeroCameraController",
+		uint64 ResourceId = 57e03e10f41635f6,
+	},
+},

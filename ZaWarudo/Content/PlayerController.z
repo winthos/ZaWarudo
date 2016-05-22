@@ -1,0 +1,199 @@
+class DioShout : Event{
+}
+
+class SpawnRed : Event {}
+
+class PlayerController : ZilchComponent
+{
+    var Movement : Real3 = Real3();
+    
+    var SoshiteTokiGaUgokiDesu : Boolean = true;
+    
+    var KonnoDioDa : Boolean = true;
+    
+    var Filter : Cog = null;
+    
+    var Camera : Cog = null;
+    
+    var Lookatme : Cog = null;
+    
+    var MouseMovement : Boolean = false;
+    
+    var CameraDefaultPosition : Real3 = Real3();
+    
+    var OrbitActive : Boolean = false;
+    
+    function Initialize(init : CogInitializer)
+    {
+        Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+        Zero.Connect(this.LevelSettings, Events.LeftMouseDown, this.OnMouseDown);
+        
+        this.Filter = this.Space.FindObjectByName("WorldFilter");
+        this.Filter.Sprite.Visible = false;
+        
+        this.Camera = this.Space.FindObjectByName("Camera");
+        this.CameraDefaultPosition = this.Camera.Transform.Translation;
+        
+        this.Lookatme = this.Space.FindObjectByName("lookatme");
+    }
+    
+    function OnMouseDown (event : MouseEvent)
+    {
+        
+        Console.WriteLine("ZA WARRUDO!");
+        
+        //enter stopped time
+        if(this.SoshiteTokiGaUgokiDesu == true)
+        {
+            //Console.WriteLine(this.SoshiteTokiGaUgokiDesu);
+            this.SoshiteTokiGaUgokiDesu = false;
+            this.Filter.Sprite.Visible = true;
+            
+            var hinjaku = new DioShout();
+            this.GameSession.DispatchEvent("THE WORLD", hinjaku);
+        }
+        
+        //exit stopped time
+        else if(this.SoshiteTokiGaUgokiDesu == false)
+        {
+            this.SoshiteTokiGaUgokiDesu = true;
+            this.Filter.Sprite.Visible = false;
+            
+            var bleh = new SpawnRed();
+            this.GameSession.DispatchEvent("SPAWN", bleh);
+            
+            //rotate the cube so that it's forward direction is the same as the camera's which we have probalby moved....
+            //this.Owner.Orientation.LocalForward.X = this.Camera.Orientation.WorldForward.X;
+            //this.Owner.Orientation.LocalForward.Y = this.Camera.Orientation.WorldForward.Y;
+           // this.Owner.Orientation.LookAtDirection(this.Lookatme.Orientation.WorldForward);
+            //this.Owner.Orientation.WorldForward.X = this.Lookatme.Orientation.WorldForward.X;
+            //this.Owner.Orientation.WorldForward.Y= this.Lookatme.Orientation.WorldForward.Y;
+            //this.Owner.Orientation.WorldForward.Z = this.Lookatme.Orientation.WorldForward.Z;
+            
+        }
+    }
+
+    function OnLogicUpdate(event : UpdateEvent)
+    {
+     
+        var rotationAngles = local Real3(0.0, 0.0, 0.0);
+        
+        //Console.WriteLine(this.Lookatme.Orientation.WorldForward);
+        
+        if(this.SoshiteTokiGaUgokiDesu == false)
+        {
+            //this.CameraDefaultPosition = this.Camera.Transform.WorldTranslation;
+            this.Camera.OrbitCamera.Active = true;
+        }
+        
+        if(this.SoshiteTokiGaUgokiDesu == true)
+        {
+            this.Camera.Transform.Translation = this.CameraDefaultPosition;
+            this.Owner.Orientation.LookAtPoint(this.Space.FindObjectByName("Red").Transform.Translation);
+        }
+        
+        var mouseScreenPosition = Zero.Mouse.ScreenPosition;
+        //Console.WriteLine(mouseScreenPosition);
+        
+        if(this.SoshiteTokiGaUgokiDesu == true)
+        {
+            //this.Camera.OrbitCamera.Active = false;
+            //move forward in the direction of the red ball
+            //this.Movement += this.Space.FindObjectByName("Red").Transform.Translation - this.Owner.Transform.Translation;
+            var direction = this.Owner.Transform.Translation - this.Space.FindObjectByName("Red").Transform.Translation;
+            //Console.WriteLine(direction);
+            
+            //var startPosition = this.Owner.Transform.Translation;
+            // Point       = Point         + Vector
+        // EndPosition = StartPosition + VelocityVector
+            //var endPosition = startPosition + direction;
+            
+           // this.Owner.RigidBody.Velocity.Z = direction.Z;
+           
+            this.Owner.Transform.LocalTranslation += 
+           ( (this.Space.FindObjectByName("Red").Transform.LocalTranslation - this.Owner.Transform.LocalTranslation) ) / 1000; 
+
+        }
+        
+        if(this.SoshiteTokiGaUgokiDesu == true && this.MouseMovement == true)
+        {
+            if(mouseScreenPosition.X - 767 > 0 && mouseScreenPosition.Y - 412 < 0)
+            {
+               // Console.WriteLine("Move to top right");
+                this.Movement += Real3(0.1, 0.1, 0);
+            }
+            
+            if(mouseScreenPosition.X - 767 > 0 && mouseScreenPosition.Y - 412 > 0)
+            {
+                //Console.WriteLine("Move to bottom right");
+                this.Movement += Real3(0.1, -0.1, 0);
+            }
+            
+            if(mouseScreenPosition.X - 767 < 0 && mouseScreenPosition.Y - 412 < 0)
+            {
+                //Console.WriteLine("Move to top left");
+                this.Movement += Real3(-0.1, 0.1, 0);
+            }
+            
+            if(mouseScreenPosition.X - 767 < 0 && mouseScreenPosition.Y - 412 > 0)
+            {
+                //Console.WriteLine("Move to bottom left");
+                this.Movement += Real3(-0.1, -0.1, 0);
+            }
+            
+            if(mouseScreenPosition.X - 767 > 0 && mouseScreenPosition.Y - 412 == 0)
+            {
+                //Console.WriteLine("Move right");
+                this.Movement += Real3(0.1, 0, 0);
+            }
+            
+            if(mouseScreenPosition.X - 767 < 0 && mouseScreenPosition.Y - 412 == 0)
+            {
+               // Console.WriteLine("Move Left");
+                this.Movement += Real3(-0.1, 0, 0);
+            }
+            
+            if(mouseScreenPosition.X - 767 == 0 && mouseScreenPosition.Y - 412 < 0)
+            {
+               // Console.WriteLine("Move Up");
+                this.Movement += Real3(0, 0.1, 0);
+            }
+            
+            if(mouseScreenPosition.X - 767 == 0 && mouseScreenPosition.Y - 412 > 0)
+            {
+               // Console.WriteLine("Move Down");
+                this.Movement += Real3(0, -0.1, 0);
+            }
+        }
+        //1535, 824 is bottom right corner
+        //0, 0 is top left corner
+        
+        //middle should be 767, 412
+        
+        //if in top right qudrant, subracting the midpoint = +, -
+        //if in bottom right qudrant, subracting midpoint = +, +
+        //if in top left quadrant, subtracting the midpoint = -, -
+        //if in bottom left quadrant, subtracting the midpoint = -, +
+        
+        
+        //var worldMousePos = this.LevelSettings.CameraViewport.ScreenToWorldZPlane(mouseScreenPosition, 0);
+        //Console.WriteLine(worldMousePos);
+        
+        //var iDunno = this.LevelSettings.CameraViewport.ScreenToWorldViewPlane(mouseScreenPosition, 0);
+        //Console.WriteLine(iDunno);
+        /*
+                var mouseScreenPosition = Zero.Mouse.ScreenPosition;
+        var worldMousePosition = this.LevelSettings.CameraViewport.ScreenToWorldZPlane(mouseScreenPosition, 0);
+        //this.Owner.Orientation.LookAtPoint(Real3(Zero.Mouse.ScreenPosition.X, Zero.Mouse.ScreenPosition.Y, 0));
+        this.Owner.Orientation.LookAtPoint(worldMousePosition);
+        */
+        
+        //Console.WriteLine(Zero.Mouse.ScreenMovement);
+       // Console.WriteLine(this.Owner.Transform.WorldTranslation);
+        this.Owner.Transform.Translation += this.Movement;
+        //this.Owner.Transform.Translation += this.Movement;
+        this.Movement = Real3(0, 0, 0);
+        
+        
+    }
+}

@@ -1,0 +1,56 @@
+Cog = 
+{
+	LinkId = 
+	{
+		uint Id = 1,
+	},
+	Named = 
+	{
+		string Name = "ZaWarudoCircle",
+	},
+	Archetyped = 
+	{
+		string Name = "579f6bc06e905801:ZaWarudoCircle",
+	},
+	Transform = 
+	{
+		Vec3 Translation = [-2.67060637, -1.92191696, 7.81419182],
+		Vec3 Scale = [1, 1, 1],
+		Quat Rotation = [0, 0, 0, 1],
+	},
+	Model = 
+	{
+		bool Visible = true,
+		bool VisibilityCulling = true,
+		bool VisibilityEvents = true,
+		bool CastShadows = false,
+		string MaterialName = "579f69eb1f2f5ec5:awesfga",
+		string MeshName = "4de0354322b376ae:Sphere",
+		Vec4 Color = [1, 1, 1, 0.100000001],
+	},
+	RigidBody = 
+	{
+		bool Static = false,
+		bool Asleep = false,
+		bool Kinematic = true,
+		bool RotationLocked = false,
+		bool Mode2D = false,
+		bool AllowSleep = true,
+		bool Inherit2DMode = true,
+		Vec3 Velocity = [0, 0, 0],
+		Vec3 AngularVelocity = [0, 0, 0],
+	},
+	SphereCollider = 
+	{
+		bool Ghost = false,
+		bool SendsMessages = true,
+		bool Seamless = true,
+		string MaterialName = "4de020863e872da8:DefaultPhysicsMaterial",
+		string SerializedGroupName = "4e740859314e5515:DefaultGroup",
+		Vec3 Offset = [0, 0, 0],
+		float Radius = 1,
+	},
+	ZaWarudoCircle = 
+	{
+	},
+},

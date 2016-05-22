@@ -1,0 +1,15 @@
+TextContent = 
+{
+	ZilchScriptBuilder = 
+	{
+		string Name = "QuaternionCamera",
+		uint64 ResourceId = 532e2ab87b2a4333,
+	},
+	ContentTags = 
+	{
+		Array Tags = 
+		[
+			"3dCameras",
+		],
+	},
+},

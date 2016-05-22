@@ -1,0 +1,15 @@
+class RedSpawnController : ZilchComponent
+{
+    function Initialize(init : CogInitializer)
+    {
+        //Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+        this.Space.CreateAtPosition(Archetype.Find("Red"), this.Owner.Transform.Translation);
+        
+        Zero.Connect(this.GameSession, "SPAWN", this.SpawnTheThing);
+    }
+    
+    function SpawnTheThing(event : SpawnRed)
+    {
+        this.Space.CreateAtPosition(Archetype.Find("Red"), this.Owner.Transform.WorldTranslation);
+    }
+}

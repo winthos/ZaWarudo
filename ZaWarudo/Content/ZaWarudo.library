@@ -1,0 +1,7 @@
+ContentLibrary = 
+{
+	string Name = "ZaWarudo",
+	uint64 LibraryId = 57e2c6b475d29f1c,
+	string SourceControlType = "",
+	bool ReadOnly = false,
+},
