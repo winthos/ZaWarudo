@@ -1,0 +1,8 @@
+TextContent = 
+{
+	ZilchScriptBuilder = 
+	{
+		string Name = "TimeStopParticle",
+		uint64 ResourceId = 579fede22cf7ff18,
+	},
+},

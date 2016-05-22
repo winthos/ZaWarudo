@@ -1,0 +1,8 @@
+TextContent = 
+{
+	ZilchScriptBuilder = 
+	{
+		string Name = "NormalTimeParticle",
+		uint64 ResourceId = 579fecc45b66b8eb,
+	},
+},
