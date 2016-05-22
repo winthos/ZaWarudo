@@ -21,6 +21,12 @@ Space Bar   - Move Forward while time is stopped. This is used for movement/atta
 
 WASD        - Move about the Local XY plane while in normal time. Used to dodge asteroids in normal time.
 
+J           - Press this to simulate an enemy using time stop. Unless the player also enters stopped time, the player
+              Is "frozen" and unable to act. The enemy can stop time for up to 10 seconds, so the player must 
+              not enter stopped time too early otherwise the player will run out of Stopped time before the enemy does.
+              
+K           - Press this to end the Enemy Stopped Time early. 
+
 */
 
 class ZeroCameraController : ZilchComponent
@@ -178,20 +184,38 @@ class ZeroCameraController : ZilchComponent
             this.OnagiTypeNoSutando = false;
         }
         
+        //checks if the enemy has entered stoped time, causing the player to be frozen if the player is still
+        //in normal time. A purple filter is overlayed to show that an enemy has done this. 
         if(this.OnagiTypeNoSutando == true)
         {
+            //display purple filter so player knows that the enemy stopped time
             this.EnemyWorldFilter.Sprite.Visible = true;
             this.OreOTokiOTometa += event.Dt;
             
+            //display the enemy's time stop duration
             var roundedenemytime = Math.Ceil(this.OreOTokiOTometa, -2);
             this.EnemyTimerText.SpriteText.Text = "`roundedenemytime`";
             
+            var rand1 = new Random();
+
+            //if the enemy stops time and the player has not entered stopped time, they are "struggling" so 
+            //I added this shaking effect as a form of visual feedback, letting the player know that
+            //they must enter stopped time themselves in order to fight back against the enemy stopped time
+            if(this.Soshitetokigaugokidesu == true)
+            {
+                this.Owner.Transform.WorldTranslation += 
+                Real3(rand1.Range(-0.03, 0.03), rand1.Range(-0.03, 0.03), rand1.Range(-0.03, 0.03));
+            }
+            
+            //10 seconds is the maximum amount of time the enemy can stop time, for now
             if(this.OreOTokiOTometa >= 10)
             {
                 this.OnagiTypeNoSutando = false;
             }
         }
         
+        //if the enemy uses up their 10 seconds of stopped time or you press K to end enemy stopped
+        //time early, do these things.
         if(this.OnagiTypeNoSutando == false)
         {
             this.EnemyWorldFilter.Sprite.Visible = false;
@@ -260,8 +284,8 @@ class ZeroCameraController : ZilchComponent
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //if right mouse is down, orbit around the player according to mouse position
         //rotate by moving the Mount that is parented to the player
-        if((this.LeftMouseDown == true && this.Soshitetokigaugokidesu == false) || 
-        (this.LeftMouseDown == true && this.OnagiTypeNoSutando == true)) //if right mouse is down, time has stopped
+        if((this.LeftMouseDown == true && this.Soshitetokigaugokidesu == false)) //|| 
+        //(this.LeftMouseDown == true && this.OnagiTypeNoSutando == true)) //if right mouse is down, time has stopped
         {
             //mouse move 2d vector, extract x component, then rotate that many degrees around local y
             this.RotationPivot.Transform.RotateAnglesLocal(Real3(0, -this.MouseDelta.X*0.01, 0));
@@ -309,6 +333,7 @@ class ZeroCameraController : ZilchComponent
             
         }
         
+        //reset the player timer sprite text when in normal time
         if(this.Soshitetokigaugokidesu == true)
         {
             this.Ichibyoukeika = 0.0;
