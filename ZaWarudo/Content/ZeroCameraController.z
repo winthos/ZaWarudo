@@ -173,8 +173,10 @@ class ZeroCameraController : ZilchComponent
     function OnLogicUpdate(event : UpdateEvent)
     {
         //test for enemy stopping time 
-        if(Zero.Keyboard.KeyIsDown(Keys.J))
+        if(Zero.Keyboard.KeyIsPressed(Keys.J))
         {
+            var konnoDioGa = new Bakana();
+            this.GameSession.DispatchEvent("Bakana!", konnoDioGa);
             this.OnagiTypeNoSutando = true;
         }
         
