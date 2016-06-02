@@ -52,7 +52,7 @@ class ZeroCameraController : ZilchComponent
     var MovementSpeed : Real = 0.04;
     
     // Used to store mouse state so we can use it during logic update.
-    var LeftMouseDown : Boolean = false;
+    var LeftMouseDown : Boolean = true;
     var RightMouseDown : Boolean = false;
     //this is the change in mouse position stored as a 2D vector
     var MouseDelta : Real2 = Real2(0.0, 0.0);
@@ -137,13 +137,13 @@ class ZeroCameraController : ZilchComponent
 ///////////////////////////////////
     function OnLeftMouseDown(viewportMouseEvent : ViewportMouseEvent)
     {
-        this.LeftMouseDown = true;
+        //this.LeftMouseDown = true;
         Console.WriteLine("Left mouse is donw");
     }
     
     function OnLeftMouseUp(viewportMouseEvent : ViewportMouseEvent)
     {
-        this.LeftMouseDown = false;
+        //this.LeftMouseDown = false;
         Console.WriteLine("LeftMouse is uppppp");
     }
 ////////////////////////////////////
@@ -166,8 +166,15 @@ class ZeroCameraController : ZilchComponent
     function OnMouseMove(viewportMouseEvent : ViewportMouseEvent)
     {
         //need to rotate around the player based on this movement value somehow?
-        this.MouseDelta = viewportMouseEvent.Movement;
-        //Console.WriteLine(this.MouseDelta);
+        var delt = viewportMouseEvent.Movement;
+
+        this.MouseDelta = delt;
+        //viewportMouseEvent.Position
+        Console.WriteLine(this.MouseDelta);
+        
+        
+        
+        //Reminder to change in a bit:
     }
     
     function OnLogicUpdate(event : UpdateEvent)
@@ -225,8 +232,11 @@ class ZeroCameraController : ZilchComponent
             this.EnemyTimerText.SpriteText.Text = "0";
         }
         //first the camera always needs to look at the Player
-        this.Owner.Orientation.LookAtPoint(this.Player.Transform.WorldTranslation);
-        
+        //Console.WriteLine("Old `this.Owner.Orientation.`");
+        var facing = this.Player.Transform.WorldTranslation;
+        //facing.X = ;
+        //Console.WriteLine(this.Owner.Orientation.GetLookAtPointRotation(facing));
+        //Console.WriteLine("New `this.Owner.Orientation.WorldForward`");
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // TIME NORMAL  // this stuff happens if time is flowing normally
@@ -247,6 +257,7 @@ class ZeroCameraController : ZilchComponent
                
                 //this is just so that we only set the player's new forward direction once
                 this.Ichangedthethingalready = false;
+                
             }
             
             ///////////////////////
@@ -290,13 +301,16 @@ class ZeroCameraController : ZilchComponent
         //(this.LeftMouseDown == true && this.OnagiTypeNoSutando == true)) //if right mouse is down, time has stopped
         {
             //mouse move 2d vector, extract x component, then rotate that many degrees around local y
-            this.RotationPivot.Transform.RotateAnglesLocal(Real3(0, -this.MouseDelta.X*0.01, 0));
+            //this.RotationPivot.Transform.RotateAnglesLocal(Real3(0, -this.MouseDelta.X*0.01, 0));
 
             //rotate around local x in the same way as above
-            this.RotationPivot.Transform.RotateAnglesLocal(Real3(-this.MouseDelta.Y*0.01, 0, 0));
+            //this.RotationPivot.Transform.RotateAnglesLocal(Real3(-this.MouseDelta.Y*0.01, 0, 0));
             
             //this is just resetting that boolean so that the Player's Forward direction is only changed
             //once when switching back to normal time
+            
+            this.RotationPivot.Transform.RotateAround(this.Player.Transform.Translation, Math.ToQuaternion(Real3(this.MouseDelta.Y*0.01, -this.MouseDelta.X*0.01, 0)));
+            //Console.WriteLine(this.MouseDelta);
             this.Ichangedthethingalready = true;
             
         }
@@ -317,8 +331,8 @@ class ZeroCameraController : ZilchComponent
             //count how long we have been in stopped time
             this.Ichibyoukeika += event.Dt;
             
-            Console.WriteLine(this.Ichibyoukeika);
-            if(this.Ichibyoukeika >= 7.0)
+            //Console.WriteLine(this.Ichibyoukeika);
+            if(this.Ichibyoukeika >= 10000000.0) //why isn't this a property
             {
                 //we have used up our 7 seconds of stopped time!
                 //go back to normal time

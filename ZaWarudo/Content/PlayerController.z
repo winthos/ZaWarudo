@@ -1,7 +1,8 @@
-class DioShout : Event{
+class DioShout : ZilchEvent
+{
 }
 
-class SpawnRed : Event {}
+class SpawnRed : ZilchEvent {}
 
 class PlayerController : ZilchComponent
 {
