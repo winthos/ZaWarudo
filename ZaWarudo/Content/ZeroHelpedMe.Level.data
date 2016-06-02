@@ -215,10 +215,6 @@ Level =
 							Vec3 ForwardVector = [-0, -0, -1],
 							OrientationBases DefaultBases = ForwardNegativeZUpY,
 						},
-						ZeroCameraController = 
-						{
-							float MovementSpeed = 0.150000006,
-						},
 						SoundEmitter = 
 						{
 							float Volume = 1,
@@ -228,6 +224,10 @@ Level =
 						},
 						SoundPlayerThing = 
 						{
+						},
+						ZeroCameraController = 
+						{
+							float MovementSpeed = 0.150000006,
 						},
 						Hierarchy = 
 						{
