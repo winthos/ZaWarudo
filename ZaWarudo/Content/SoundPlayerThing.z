@@ -1,4 +1,4 @@
-class Bakana : Event
+class Bakana : ZilchEvent
 {
 }
 
