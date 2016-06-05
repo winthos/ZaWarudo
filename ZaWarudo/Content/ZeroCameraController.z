@@ -72,9 +72,6 @@ class ZeroCameraController : ZilchComponent
     var RightMouseDown : Boolean = false;
     //this is the change in mouse position stored as a 2D vector
     var MouseDelta : Real2 = Real2(0.0, 0.0);
-
-    //This is true only when in normal time, since, in normal time Soshite toki ga ugoki desu....
-    //I also use this to basically check if we are in stopped time or not
     
     //this is TRUE when time is normal, and FALS when the PLAYER has stopped time
     var TimeIsFlowingNormally : Boolean = true;
@@ -88,9 +85,6 @@ class ZeroCameraController : ZilchComponent
     //the player's facing must lock in whatever is the current "forward" direction
     //while time is normal
     var DoThisOnceAfterSwitchingBackToNormalTime : Boolean = true;
-    
-    //stores world forward for the player if we need it I guess
-    var Worldforward : Real3 = Real3();
     
     //counts how long we have spent in stopped time (seconds)
     var PlayerAmountOfStoppedTime : Real = 0.0;
@@ -112,14 +106,29 @@ class ZeroCameraController : ZilchComponent
         Zero.Connect(viewport, Events.LeftMouseDown, this.OnLeftMouseDown);
         Zero.Connect(viewport, Events.LeftMouseUp, this.OnLeftMouseUp);
         
+        //the player object
         this.Player = this.Space.FindObjectByName("Player");
-        this.Mount = this.Space.FindObjectByName("Mount");
+        //the yellow filter that makes the screen yellow if the player stopped time
         this.WorldFilter = this.Space.FindObjectByName("WorldFilter");
+        //the purple filter that makes the screen purple if the enemy stops time
         this.EnemyWorldFilter = this.Space.FindObjectByName("EnemyWorldFilter");
-        this.RotationPivot = this.Space.FindObjectByName("RotationPivot");
-        this.TimerText = this.Space.FindObjectByName("Timer");
-        this.EnemyTimerText = this.Space.FindObjectByName("EnemyTimer");
         
+        //NOTE the two filters combine colors when both are active, to show that both the player AND the enemy are in the time stopped
+        //state, we can probably expand on this feedback
+        
+        //the rotation pivot transform. This is a bundle of heirarchies that contain the camera and anything parented to the 
+        //camera. It stays in place relative to the player due to its worldtranslation being set to the player's world translation
+        // every frame in onlogicupdate. This effectively "parented" it to the player without actually adding to the player's
+        //heirarchy, which is what we needed because both the player and the RotationPivot need to maintain their
+        //own individual Local directions, which would not happen if the pivot was parented to the player.
+        this.RotationPivot = this.Space.FindObjectByName("RotationPivot");
+        
+        //the bottom text that is the player's amount of stopped time
+        this.TimerText = this.Space.FindObjectByName("Timer");
+        //the top text that is the enemy's amount of stopped time
+        this.EnemyTimerText = this.Space.FindObjectByName("EnemyTimer");
+
+        //initialize this to false so we only see it when time is stopped
         this.WorldFilter.Sprite.Visible = false;
     }
 
@@ -160,11 +169,6 @@ class ZeroCameraController : ZilchComponent
     {
         this.RightMouseDown = false;
         Console.WriteLine("RightMouse is up");
-        //this.TimeIsFlowingNormally = true;
-        //this.WorldFilter.Sprite.Visible = false;
-        
-        //this.Player.Transform.RotateAnglesLocal(Real3(this.Mount.Transform.LocalRotation.X, 
-        //this.Mount.Transform.LocalRotation.Y, this.Mount.Transform.LocalRotation.Z));
     }
 
 ////////////////////////////////////
@@ -258,7 +262,7 @@ class ZeroCameraController : ZilchComponent
         {
             this.EnemyWorldFilter.Sprite.Visible = false;
             this.EnemyAmountOfStoppedTime = 0.0;
-            this.EnemyTimerText.SpriteText.Text = "0";
+            this.EnemyTimerText.SpriteText.Text = "Enemy's Stopped Time";
         }
         
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -371,7 +375,7 @@ class ZeroCameraController : ZilchComponent
         if(this.TimeIsFlowingNormally == true)
         {
             this.PlayerAmountOfStoppedTime = 0.0;
-            this.TimerText.SpriteText.Text = "0";
+            this.TimerText.SpriteText.Text = "Player's Stopped Time";
         }
         
         // this variable CameraDir is used to calculate the "forward" direction for the player
