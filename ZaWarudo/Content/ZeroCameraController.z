@@ -87,7 +87,7 @@ class ZeroCameraController : ZilchComponent
     var DoThisOnceAfterSwitchingBackToNormalTime : Boolean = true;
     
     //counts how long we have spent in stopped time (seconds)
-    var PlayerAmountOfStoppedTime : Real = 0.0;
+    var PlayerAmountOfStoppedTime : Real = 10.0;
     
     //counts how long the enemy has spent in stopped time
     var EnemyAmountOfStoppedTime : Real = 0.0;
@@ -105,6 +105,8 @@ class ZeroCameraController : ZilchComponent
         Zero.Connect(viewport, Events.MouseMove, this.OnMouseMove);
         Zero.Connect(viewport, Events.LeftMouseDown, this.OnLeftMouseDown);
         Zero.Connect(viewport, Events.LeftMouseUp, this.OnLeftMouseUp);
+        Zero.Connect(this.Space, "EnemyOutofTime", this.EnemyTimeResume);
+        
         
         //the player object
         this.Player = this.Space.FindObjectByName("Player");
@@ -352,17 +354,17 @@ class ZeroCameraController : ZilchComponent
         if(this.TimeIsFlowingNormally == false)
         {
             //count how long we have been in stopped time
-            this.PlayerAmountOfStoppedTime += event.Dt;
+            this.PlayerAmountOfStoppedTime -= event.Dt;
             
             //Console.WriteLine(this.PlayerAmountOfStoppedTime);
-            if(this.PlayerAmountOfStoppedTime >= this.PlayersTotalStoppedTime) //why isn't this a property
+            if(this.PlayerAmountOfStoppedTime <= 0) //why isn't this a property
             {
                 //we have used up our 7 seconds of stopped time!
                 //go back to normal time
                 this.TimeIsFlowingNormally = true;
                 this.WorldFilter.Sprite.Visible = false;
                 //make sure to reset our stopped time counter
-                this.PlayerAmountOfStoppedTime = 0.0;
+                this.PlayerAmountOfStoppedTime = 10.0;
             }
             
             //UI to show how long we have been in stopped time. Set to a sprite just 
@@ -374,9 +376,14 @@ class ZeroCameraController : ZilchComponent
         //reset the player timer sprite text when in normal time
         if(this.TimeIsFlowingNormally == true)
         {
-            this.PlayerAmountOfStoppedTime = 0.0;
+            if (this.PlayerAmountOfStoppedTime <= 0.0)
+                this.PlayerAmountOfStoppedTime = 10.0;
             this.TimerText.SpriteText.Text = "Player's Stopped Time";
         }
+        
+        /////////////////////////////////
+        //THIS STUFF ALWAYS HAPPENS FOR REASONS
+        /////////////////////////////////
         
         // this variable CameraDir is used to calculate the "forward" direction for the player
             var cameraDir = Real3();
@@ -426,5 +433,10 @@ class ZeroCameraController : ZilchComponent
         //this needs to reset every frame otherwise the "change in position since last frame"
         //that the Delta is tracking won't mean anything.
         this.MouseDelta = Real2(0.0, 0.0);
+    }
+    
+    function EnemyTimeResume(event : IAmOutOfTime)
+    {
+        
     }
 }

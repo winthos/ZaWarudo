@@ -1,0 +1,52 @@
+
+  // Message enemies send when they are out of time
+class IAmOutOfTime : ZilchEvent
+{
+    
+}
+
+
+class EnemyController : ZilchComponent
+{
+      // The rate at which the enemy moves toward the player
+    [Property]
+    var MovementSpeed : Real = 0.0;
+    
+      // Counter for 
+    [Property]
+    var AmountStoppedTime : Real = 10.0;
+    
+
+    var Player : Cog = null;
+    var Camera : Cog = null;
+    
+    var Active : Boolean = true;
+    
+    function Initialize(init : CogInitializer)
+    {
+        Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+        this.Player = this.Space.FindObjectByName("Player");
+        this.Camera = this.Space.FindObjectByName("Camera");
+        this.Camera.ZeroCameraController.EnemyHasStoppedTime = true;
+    }
+
+    function OnLogicUpdate(event : UpdateEvent)
+    {
+        if (!this.Active)
+            return;
+            
+        if (this.AmountStoppedTime > 0 && this.Camera.ZeroCameraController.EnemyHasStoppedTime)
+        {
+            this.AmountStoppedTime += event.Dt;
+            var movementVector = Real3();
+            movementVector = Math.Normalize(this.Player.Transform.WorldTranslation - this.Owner.Transform.WorldTranslation) * this.MovementSpeed;
+            //Console.WriteLine(movementVector);
+            this.Owner.Transform.Translation += movementVector;
+        }
+        else if (this.AmountStoppedTime <= 0)
+        {
+            this.Active = false;
+            this.Space.DispatchEvent("EnemyOutofTime", IAmOutOfTime());
+        }
+    }
+}
