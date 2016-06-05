@@ -15,9 +15,7 @@ DIRECTIONS/CONTROLS
 Right Click - Toggle Stopped Time. You can stay in stopped time a max of 7 seconds. You can toggle out of
               stopped time early.
               
-Left Click  - Reorient forward direction while time is stopped. Does nothing during normal time flow.
-
-Space Bar   - Move Forward while time is stopped. This is used for movement/attacking enemies during stopped time.
+Left Click  - Move Forward during stopped time
 
 WASD        - Move about the Local XY plane while in normal time. Used to dodge asteroids in normal time.
 
@@ -35,7 +33,7 @@ class ZeroCameraController : ZilchComponent
     [Dependency]
     var Camera : Camera = null;
     
-    //grab the things we need as Cogs because I'm putting
+    //grab the objects in the level we need as Cogs because I'm putting
     //everything on this one script instead of seperating it into
     //components like I should because
     //IM AN ADULT AND CAN DO WHAT I WANT JORDAN 
@@ -49,6 +47,8 @@ class ZeroCameraController : ZilchComponent
     
     
     ///////////////////////////////////////////////////////////////
+    //this is some magic math stuff jordan came up with to make
+    //the camera correct during stopped time
     var Phi : Real = Math.Pi * 0.5;
     var Theta : Real = Math.Pi * 0.5;
     var Target : Real3 = Real3();
@@ -56,36 +56,47 @@ class ZeroCameraController : ZilchComponent
     [Property]
     var CameraRadius : Real = 5.0;
     
+    //this is the player's maximum amount of time he has to spend in stopped time
+    [Property]
+    var PlayersTotalStoppedTime : Real = 7.0;
     
-    
+    //this is the enemy's maximum amount of time it can spend in stopped time
+    [Property]
+    var EnemysTotalStoppedTime : Real = 10.0;
     //this changes forward movement speed while in normal time
     [Property]
     var MovementSpeed : Real = 0.04;
     
     // Used to store mouse state so we can use it during logic update.
-    var LeftMouseDown : Boolean = true;
+    var LeftMouseDown : Boolean = false;
     var RightMouseDown : Boolean = false;
     //this is the change in mouse position stored as a 2D vector
     var MouseDelta : Real2 = Real2(0.0, 0.0);
 
     //This is true only when in normal time, since, in normal time Soshite toki ga ugoki desu....
     //I also use this to basically check if we are in stopped time or not
-    var Soshitetokigaugokidesu : Boolean = true;
+    
+    //this is TRUE when time is normal, and FALS when the PLAYER has stopped time
+    var TimeIsFlowingNormally : Boolean = true;
     
     //used to indicate if an Enemy has stopped time, but the player may not have stopped time yet.
-    var OnagiTypeNoSutando : Boolean = false;
+    var EnemyHasStoppedTime : Boolean = false;
     
-    //used to indicate that I changed the Thing already and don't need to do it again
-    var Ichangedthethingalready : Boolean = true;
+    //used to do something ONCE after switching from stopped to normal time
+    //specifically it's used for changing the forward facing of the player once
+    //since in Stopped Time the player's facing needs to change every frame, but
+    //the player's facing must lock in whatever is the current "forward" direction
+    //while time is normal
+    var DoThisOnceAfterSwitchingBackToNormalTime : Boolean = true;
     
     //stores world forward for the player if we need it I guess
     var Worldforward : Real3 = Real3();
     
     //counts how long we have spent in stopped time (seconds)
-    var Ichibyoukeika : Real = 0.0;
+    var PlayerAmountOfStoppedTime : Real = 0.0;
     
     //counts how long the enemy has spent in stopped time
-    var OreOTokiOTometa : Real = 0.0;
+    var EnemyAmountOfStoppedTime : Real = 0.0;
     
     
     
@@ -116,7 +127,10 @@ class ZeroCameraController : ZilchComponent
     
 ////////////////////////////////////
 
-//MOUSE DOWN TIME IS STOPPED
+//RIGHT MOUSE STUFF
+//The following two functions are just to keep track of if the right mouse is down or not
+//some other stuff happens when the right mouse is down, probably should
+//port that over to a different function but what are ya gonna do
 
 ////////////////////////////////////
     function OnRightMouseDown(viewportMouseEvent : ViewportMouseEvent)
@@ -124,9 +138,9 @@ class ZeroCameraController : ZilchComponent
         this.RightMouseDown = true;
         Console.WriteLine("right mouse is done");
         
-        if(this.Soshitetokigaugokidesu == true)
+        if(this.TimeIsFlowingNormally == true)
         {
-            this.Soshitetokigaugokidesu = false;
+            this.TimeIsFlowingNormally = false;
             this.WorldFilter.Sprite.Visible = true;
             var hinjaku = new DioShout();
             this.GameSession.DispatchEvent("THE WORLD", hinjaku);
@@ -134,87 +148,90 @@ class ZeroCameraController : ZilchComponent
             this.Space.CreateAtPosition(Archetype.Find("ZaWarudoCircle"), this.Player.Transform.WorldTranslation);
         }
         
-        else if(this.Soshitetokigaugokidesu == false)
+        else if(this.TimeIsFlowingNormally == false)
         {
-            this.Soshitetokigaugokidesu = true;
+            this.TimeIsFlowingNormally = true;
             this.WorldFilter.Sprite.Visible = false;
         }
         
     }
-    
-////////////////////////////////////
 
-//LEFT MOUSE STUFF IS FOR ROTATING WHILE IN STOPPED TIME
-
-///////////////////////////////////
-    function OnLeftMouseDown(viewportMouseEvent : ViewportMouseEvent)
-    {
-        //this.LeftMouseDown = true;
-        Console.WriteLine("Left mouse is donw");
-    }
-    
-    function OnLeftMouseUp(viewportMouseEvent : ViewportMouseEvent)
-    {
-        //this.LeftMouseDown = false;
-        Console.WriteLine("LeftMouse is uppppp");
-    }
-////////////////////////////////////
-
-//MOUSE UP TIME GOES TO NORMAL
-
-////////////////////////////////////
     function OnRightMouseUp(viewportMouseEvent : ViewportMouseEvent)
     {
         this.RightMouseDown = false;
         Console.WriteLine("RightMouse is up");
-        //this.Soshitetokigaugokidesu = true;
+        //this.TimeIsFlowingNormally = true;
         //this.WorldFilter.Sprite.Visible = false;
         
         //this.Player.Transform.RotateAnglesLocal(Real3(this.Mount.Transform.LocalRotation.X, 
         //this.Mount.Transform.LocalRotation.Y, this.Mount.Transform.LocalRotation.Z));
     }
-/////////////////////////////////////
+
+////////////////////////////////////
+
+//LEFT MOUSE STUFF - This just checks and updates if the left mouse is down
+//gotto keep track of the boolean which other stuff checks for to determine left mouse down or not
+
+///////////////////////////////////
+    function OnLeftMouseDown(viewportMouseEvent : ViewportMouseEvent)
+    {
+        this.LeftMouseDown = true;
+       // Console.WriteLine("Left mouse is donw");
+    }
+    
+    function OnLeftMouseUp(viewportMouseEvent : ViewportMouseEvent)
+    {
+        this.LeftMouseDown = false;
+        //Console.WriteLine("LeftMouse is uppppp");
+    }
+
+//////////////////////////////////////
+// TRACK MOUSE DELTA (change in mouse position) for use
+// in camera logic
 /////////////////////////////////////
     function OnMouseMove(viewportMouseEvent : ViewportMouseEvent)
     {
-        //need to rotate around the player based on this movement value somehow?
+        //this function of viewport MouseEvent just gives a 2D vector of how much
+        //the mouse has moved compared to the past frame
         var delt = viewportMouseEvent.Movement;
 
         this.MouseDelta = delt;
         //viewportMouseEvent.Position
-        Console.WriteLine(this.MouseDelta);
-        
-        
-        
-        //Reminder to change in a bit:
+        //Console.WriteLine(this.MouseDelta);
     }
     
+//////////////////////////////////////////
+// UPDATE EVERY FRAME! WHOO 
+////////////////////////////////////////////
     function OnLogicUpdate(event : UpdateEvent)
     {
-        //test for enemy stopping time 
+        //Press J to simulate the enemy stopping time and forcing the
+        //player to stop moving unless the player also enters stopped time
+        //this will eventually be replaced with some sort of AI logic, but for testing press the button
         if(Zero.Keyboard.KeyIsPressed(Keys.J))
         {
+            //play the sound effect of the player saying "what! impossible!"
             var konnoDioGa = new Bakana();
             this.GameSession.DispatchEvent("Bakana!", konnoDioGa);
-            this.OnagiTypeNoSutando = true;
+            this.EnemyHasStoppedTime = true;
         }
         
         //test for enemy turning off their time in stopped time
         if(Zero.Keyboard.KeyIsDown(Keys.K))
         {
-            this.OnagiTypeNoSutando = false;
+            this.EnemyHasStoppedTime = false;
         }
         
         //checks if the enemy has entered stoped time, causing the player to be frozen if the player is still
         //in normal time. A purple filter is overlayed to show that an enemy has done this. 
-        if(this.OnagiTypeNoSutando == true)
+        if(this.EnemyHasStoppedTime == true)
         {
             //display purple filter so player knows that the enemy stopped time
             this.EnemyWorldFilter.Sprite.Visible = true;
-            this.OreOTokiOTometa += event.Dt;
+            this.EnemyAmountOfStoppedTime += event.Dt;
             
             //display the enemy's time stop duration
-            var roundedenemytime = Math.Ceil(this.OreOTokiOTometa, -2);
+            var roundedenemytime = Math.Ceil(this.EnemyAmountOfStoppedTime, -2);
             this.EnemyTimerText.SpriteText.Text = "`roundedenemytime`";
             
             var rand1 = new Random();
@@ -222,55 +239,48 @@ class ZeroCameraController : ZilchComponent
             //if the enemy stops time and the player has not entered stopped time, they are "struggling" so 
             //I added this shaking effect as a form of visual feedback, letting the player know that
             //they must enter stopped time themselves in order to fight back against the enemy stopped time
-            if(this.Soshitetokigaugokidesu == true)
+            if(this.TimeIsFlowingNormally == true)
             {
                 this.Owner.Transform.WorldTranslation += 
                 Real3(rand1.Range(-0.03, 0.03), rand1.Range(-0.03, 0.03), rand1.Range(-0.03, 0.03));
             }
             
             //10 seconds is the maximum amount of time the enemy can stop time, for now
-            if(this.OreOTokiOTometa >= 10)
+            if(this.EnemyAmountOfStoppedTime >= this.EnemysTotalStoppedTime)
             {
-                this.OnagiTypeNoSutando = false;
+                this.EnemyHasStoppedTime = false;
             }
         }
         
         //if the enemy uses up their 10 seconds of stopped time or you press K to end enemy stopped
         //time early, do these things.
-        if(this.OnagiTypeNoSutando == false)
+        if(this.EnemyHasStoppedTime == false)
         {
             this.EnemyWorldFilter.Sprite.Visible = false;
-            this.OreOTokiOTometa = 0.0;
+            this.EnemyAmountOfStoppedTime = 0.0;
             this.EnemyTimerText.SpriteText.Text = "0";
         }
-        //first the camera always needs to look at the Player
-        //Console.WriteLine("Old `this.Owner.Orientation.`");
-        var facing = this.Player.Transform.WorldTranslation;
         
-        //facing.X = ;
-        //Console.WriteLine(this.Owner.Orientation.GetLookAtPointRotation(facing));
-        //Console.WriteLine("New `this.Owner.Orientation.WorldForward`");
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // TIME NORMAL  // this stuff happens if time is flowing normally
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        if(this.Soshitetokigaugokidesu == true && this.OnagiTypeNoSutando == false)
+        if(this.TimeIsFlowingNormally == true && this.EnemyHasStoppedTime == false)
         {
             //while normal time is flowing, the player always moves in
             //the it's Forward Direction
             this.Player.Transform.WorldTranslation += this.Player.Orientation.WorldForward * -this.MovementSpeed;
             
             //this stuff only happens Once whenever we start/switch back to normal time
-            if(this.Ichangedthethingalready == true)
+            if(this.DoThisOnceAfterSwitchingBackToNormalTime == true)
             {
                 //change the Player's Direction so that his new "Forward" is set based on where
                 //the Camera is facing
                 this.Player.Transform.WorldRotation = this.Owner.Transform.WorldRotation;
                
                 //this is just so that we only set the player's new forward direction once
-                this.Ichangedthethingalready = false;
-                
+                this.DoThisOnceAfterSwitchingBackToNormalTime = false;
             }
             
             ///////////////////////
@@ -305,93 +315,78 @@ class ZeroCameraController : ZilchComponent
         
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// TIME STOPPED  //
+// TIME STOPPED  // EVERYTHING IN THIS SECTION HAPPENS WHILE TIME IS STOPPED
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //if right mouse is down, orbit around the player according to mouse position
-        //rotate by moving the Mount that is parented to the player
-        if((this.LeftMouseDown == true && this.Soshitetokigaugokidesu == false)) //|| 
-        //(this.LeftMouseDown == true && this.OnagiTypeNoSutando == true)) //if right mouse is down, time has stopped
+        //this just checks if time is currently stopped or not
+        if((this.TimeIsFlowingNormally == false))
         {
-            //mouse move 2d vector, extract x component, then rotate that many degrees around local y
-            //this.RotationPivot.Transform.RotateAnglesLocal(Real3(0, -this.MouseDelta.X*0.01, 0));
-
-            //rotate around local x in the same way as above
-            //this.RotationPivot.Transform.RotateAnglesLocal(Real3(-this.MouseDelta.Y*0.01, 0, 0));
-            
-            //this is just resetting that boolean so that the Player's Forward direction is only changed
-            //once when switching back to normal time
-
-            //this.RotationPivot.Transform.RotateAround(this.Player.Transform.Translation, Math.ToQuaternion(Real3(this.MouseDelta.Y*0.01, -this.MouseDelta.X*0.01, 0)));
-            //Console.WriteLine(this.MouseDelta);
-            this.Ichangedthethingalready = true;
+            //this is just resetting the boolean for later use once time is back to normal
+            this.DoThisOnceAfterSwitchingBackToNormalTime = true;
             
             this.Phi -= this.MouseDelta.Y * 0.01;
                 // Clamp the pole angle so that we don't flip the camera upside-down
                 this.Phi = Math.Clamp(this.Phi, 0.01, Math.Pi - 0.01);
                 this.Theta += this.MouseDelta.X * 0.01;
             
+            if(this.LeftMouseDown == true)
+            {
+                // clicking left mouse while time is stopped propels the player
+                //forward in the current direction of the camera
+                // this is how we will change the "forward" direction 
+                
+                //change rotation to match the camera's world rotation 
+                this.Player.Transform.WorldRotation = this.Owner.Transform.WorldRotation;
+                
+                //move the player forward ** this is negative because the player's forward is actually 
+                // backwards because the Zero Orientation thing is wierd
+                this.Player.Transform.WorldTranslation += this.Player.Orientation.WorldForward * -0.5;
+            }
         }
         
         //tims is still stopped, but i don't care about mouse being down for this stuff
-        if(this.Soshitetokigaugokidesu == false)
+        if(this.TimeIsFlowingNormally == false)
         {
-            if(Zero.Keyboard.KeyIsDown(Keys.Space))
-            {
-                //pressing space moves you forward so you can maneuver in stopped time
-                //compat is planned to be based on ramming enemies with this movement while
-                //time is stopped
-                this.Player.Transform.WorldRotation = this.Owner.Transform.WorldRotation;
-                //Console.WriteLine("Onagi Type no Stando!?!");
-                this.Player.Transform.WorldTranslation += this.Player.Orientation.WorldForward * -0.5;
-            }
-            
             //count how long we have been in stopped time
-            this.Ichibyoukeika += event.Dt;
+            this.PlayerAmountOfStoppedTime += event.Dt;
             
-            //Console.WriteLine(this.Ichibyoukeika);
-            if(this.Ichibyoukeika >= 10000000.0) //why isn't this a property
+            //Console.WriteLine(this.PlayerAmountOfStoppedTime);
+            if(this.PlayerAmountOfStoppedTime >= this.PlayersTotalStoppedTime) //why isn't this a property
             {
                 //we have used up our 7 seconds of stopped time!
                 //go back to normal time
-                this.Soshitetokigaugokidesu = true;
+                this.TimeIsFlowingNormally = true;
                 this.WorldFilter.Sprite.Visible = false;
                 //make sure to reset our stopped time counter
-                this.Ichibyoukeika = 0.0;
+                this.PlayerAmountOfStoppedTime = 0.0;
             }
             
             //UI to show how long we have been in stopped time. Set to a sprite just 
             //kinda hanging out for now but yeah
-            var rounded = Math.Ceil(this.Ichibyoukeika, -2);
+            var rounded = Math.Ceil(this.PlayerAmountOfStoppedTime, -2);
             this.TimerText.SpriteText.Text = "`rounded`";
-            
         }
         
         //reset the player timer sprite text when in normal time
-        if(this.Soshitetokigaugokidesu == true)
+        if(this.TimeIsFlowingNormally == true)
         {
-            this.Ichibyoukeika = 0.0;
+            this.PlayerAmountOfStoppedTime = 0.0;
             this.TimerText.SpriteText.Text = "0";
         }
         
-        
-        
-        
-        
-        // Calculate the position of the camera using spherical coordinates
+        // this variable CameraDir is used to calculate the "forward" direction for the player
             var cameraDir = Real3();
             cameraDir.X = this.CameraRadius * Math.Cos(this.Theta) * Math.Sin(this.Phi);
             cameraDir.Y = this.CameraRadius * Math.Cos(this.Phi);
             cameraDir.Z = this.CameraRadius * Math.Sin(this.Theta) * Math.Sin(this.Phi);
             
-            // Since we're looking at our target, the forward vector is just the
+            // Since the camera is always looking at the player, the forward vector is just the
             // opposite of our position vector on the unit sphere
             var forward = -cameraDir;
             forward = Math.Normalize(forward);
             
-            // Compute the forward and right vector of the camera in world space
-            var movementForward = forward;
-            var movementRight = Real3(-forward.Z, 0.0, forward.X);
+            //var movementForward = forward;
+            //var movementRight = Real3(-forward.Z, 0.0, forward.X);
             
             // Build up the total world space movement of the camera
             var movementW = Real3();
@@ -418,21 +413,14 @@ class ZeroCameraController : ZilchComponent
             transform.SetRotationBases(forward, up, right);
         
         
-        
-        
-        
-        
-        
-        
-        
-        
-        //This moves the Mount object with the player based on the player's world translation.
-        //since the Camera is parented to the Mount, The camera will always be a fixed distance from the player.
-        
-        //player world translation - world forward * whatever distance 
+        //RotationPivot is just a transform that always needs to be exactly where the player is
+        //in order for our parenting/rigging heirarchy thing to work
+        //so every frame I just keep the RotationPivot transform object where the player is.
         this.RotationPivot.Transform.WorldTranslation = this.Player.Transform.WorldTranslation;
 
         // Make sure to clear out the translational delta of the mouse used in MouseMovement
+        //this needs to reset every frame otherwise the "change in position since last frame"
+        //that the Delta is tracking won't mean anything.
         this.MouseDelta = Real2(0.0, 0.0);
     }
 }
