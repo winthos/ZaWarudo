@@ -103,9 +103,9 @@ Level =
 		},
 		Transform = 
 		{
-			Vec3 Translation = [-8.89357376, 12.1020641, 32.1079559],
+			Vec3 Translation = [-35.1608315, 48.0719452, 26.601635],
 			Vec3 Scale = [1, 1, 1],
-			Quat Rotation = [-0.218938142, -0.571692884, -0.161711499, 0.77400434],
+			Quat Rotation = [-0.284434825, -0.656709194, -0.295058489, 0.63306427],
 		},
 		Camera = 
 		{
@@ -120,9 +120,9 @@ Level =
 		EditorCameraController = 
 		{
 			ControlMode ControlMode = Orbit,
-			float LookDistance = 16.2056484,
-			float VerticalAngle = 0.55132544,
-			float HorizontalAngle = 7.5555377,
+			float LookDistance = 59.4632568,
+			float VerticalAngle = 0.844540894,
+			float HorizontalAngle = 7.89064264,
 			Vec3 LookTarget = [4.30067396, 3.6132741, 28.0489826],
 			float MoveSensitivity = 1,
 		},

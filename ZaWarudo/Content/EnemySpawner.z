@@ -1,0 +1,27 @@
+// This is for the enemy spawner. Yes.
+class EnemySpawner : ZilchComponent
+{
+      // The base interval between individual spawns of a wave
+    var IndividudalSpawnInterval : Real = 0.0;
+    
+      // Variation in the interval of spawning
+    var IndividualSpawnVariation : Real = 0.0;
+    
+      // The base interval between wave spawns
+    var GroupSpawnInterval : Real = 0.0;
+    
+      // Variation in the interval of spawning
+    var GroupSpawnVariation : Real = 0.0;
+      
+    var Timer : Real = 0.0;
+    var GrpTimer : Real = 0.0;
+    
+    function Initialize(init : CogInitializer)
+    {
+        Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+    }
+
+    function OnLogicUpdate(event : UpdateEvent)
+    {
+    }
+}

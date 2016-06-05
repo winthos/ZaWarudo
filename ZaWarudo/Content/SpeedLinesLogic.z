@@ -14,7 +14,7 @@ class SpeedLinesLogic : ZilchComponent
         if(this.Camera.ZeroCameraController.TimeIsFlowingNormally == false ||
         this.Camera.ZeroCameraController.EnemyHasStoppedTime == true)
         {
-            Console.WriteLine("Huh?");
+            //Console.WriteLine("Huh?");
             this.Owner.Sprite.Visible = false;
         }
         
