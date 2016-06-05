@@ -1,4 +1,9 @@
+//this is some sound effect logic that is mainly placeholder
 class Bakana : ZilchEvent
+{
+}
+
+class DioShout : ZilchEvent
 {
 }
 
@@ -13,7 +18,7 @@ class SoundPlayerThing : ZilchComponent
     
     function SoundEffect(event : DioShout)
     {
-        Console.WriteLine("should be shouting");
+        //Console.WriteLine("should be shouting");
         this.Space.FindObjectByName("Camera").SoundEmitter.PlayCue(SoundCue.Find("THEWORLD"));
     }
     

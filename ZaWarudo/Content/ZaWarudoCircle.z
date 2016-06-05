@@ -1,3 +1,5 @@
+//this is just the bubble like particle that spawns when you stop time
+
 class ZaWarudoCircle : ZilchComponent
 {
     function Initialize(init : CogInitializer)
