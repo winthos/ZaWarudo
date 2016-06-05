@@ -103,9 +103,9 @@ Level =
 		},
 		Transform = 
 		{
-			Vec3 Translation = [-7.26849413, 17.4098759, 36.2706299],
+			Vec3 Translation = [-8.89357376, 12.1020641, 32.1079559],
 			Vec3 Scale = [1, 1, 1],
-			Quat Rotation = [-0.33423692, -0.424972236, -0.17251417, 0.82336092],
+			Quat Rotation = [-0.218938142, -0.571692884, -0.161711499, 0.77400434],
 		},
 		Camera = 
 		{
@@ -120,9 +120,9 @@ Level =
 		EditorCameraController = 
 		{
 			ControlMode ControlMode = Orbit,
-			float LookDistance = 19.7936192,
-			float VerticalAngle = 0.771236897,
-			float HorizontalAngle = 7.23614264,
+			float LookDistance = 16.2056484,
+			float VerticalAngle = 0.55132544,
+			float HorizontalAngle = 7.5555377,
 			Vec3 LookTarget = [4.30067396, 3.6132741, 28.0489826],
 			float MoveSensitivity = 1,
 		},
@@ -228,6 +228,8 @@ Level =
 						ZeroCameraController = 
 						{
 							float CameraRadius = 5,
+							float PlayersTotalStoppedTime = 7,
+							float EnemysTotalStoppedTime = 10,
 							float MovementSpeed = 0.150000006,
 						},
 						Hierarchy = 
