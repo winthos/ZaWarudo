@@ -37,7 +37,7 @@ class EnemyController : ZilchComponent
             
         if (this.AmountStoppedTime > 0 && this.Camera.ZeroCameraController.EnemyHasStoppedTime)
         {
-            this.AmountStoppedTime += event.Dt;
+            this.AmountStoppedTime -= event.Dt;
             var movementVector = Real3();
             movementVector = Math.Normalize(this.Player.Transform.WorldTranslation - this.Owner.Transform.WorldTranslation) * this.MovementSpeed;
             //Console.WriteLine(movementVector);
@@ -47,6 +47,18 @@ class EnemyController : ZilchComponent
         {
             this.Active = false;
             this.Space.DispatchEvent("EnemyOutofTime", IAmOutOfTime());
+            this.Kaboom();
+            //destruction / explosion action?
         }
+    }
+    
+    function Kaboom()
+    {
+      var explode = this.Space.CreateAtPosition(Archetype.Find("ExplosionParticle"), this.Owner.Transform.Translation);
+      var seq = Actions.Sequence(this.Owner.Actions);
+      Actions.Property(seq, @this.Owner.Model.Visible, false, 0.1, Ease.Linear);
+      Actions.Delay(seq, 2.0);
+      Actions.Call(seq, this.Owner.Destroy);
+      
     }
 }

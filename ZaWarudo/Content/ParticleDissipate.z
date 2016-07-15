@@ -1,0 +1,19 @@
+class ParticleDissipate : ZilchComponent
+{
+  [Property]
+  var Lifetime : Real = 2.0;
+  
+  function Initialize(init : CogInitializer)
+  {
+    //Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+    var seq = Actions.Sequence(this.Owner.Actions);
+    Actions.Delay(seq, this.Lifetime);
+    Actions.Property(seq, @this.Owner.SphericalParticleEmitter.Active, false, 0.1, Ease.Linear);
+    Actions.Delay(seq, 2.0);
+    Actions.Call(seq, this.Owner.Destroy);
+  }
+
+  function OnLogicUpdate(event : UpdateEvent)
+  {
+  }
+}
