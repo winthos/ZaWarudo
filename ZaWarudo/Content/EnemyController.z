@@ -2,7 +2,8 @@
   // Message enemies send when they are out of time
 class IAmOutOfTime : ZilchEvent
 {
-    
+    var Pos : Real3;
+    var TimeToFollow : Real;
 }
 
 
@@ -35,19 +36,24 @@ class EnemyController : ZilchComponent
         if (!this.Active)
             return;
             
-        if (this.AmountStoppedTime > 0 && this.Camera.ZeroCameraController.EnemyHasStoppedTime)
+        if (this.AmountStoppedTime >= 0 || this.Camera.ZeroCameraController.EnemyHasStoppedTime)
         {
             this.AmountStoppedTime -= event.Dt;
             var movementVector = Real3();
             movementVector = Math.Normalize(this.Player.Transform.WorldTranslation - this.Owner.Transform.WorldTranslation) * this.MovementSpeed;
             //Console.WriteLine(movementVector);
             this.Owner.Transform.Translation += movementVector;
+            
         }
-        else if (this.AmountStoppedTime <= 0)
+        if (this.AmountStoppedTime <= 0.0)
         {
             this.Active = false;
-            this.Space.DispatchEvent("EnemyOutofTime", IAmOutOfTime());
+            var ev = IAmOutOfTime();
+            ev.Pos = this.Owner.Transform.WorldTranslation;
+            ev.TimeToFollow = 3.0;
+            this.Space.DispatchEvent("EnemyOutofTime", ev);
             this.Kaboom();
+            Console.WriteLine("Dispatched `ev`");
             //destruction / explosion action?
         }
     }

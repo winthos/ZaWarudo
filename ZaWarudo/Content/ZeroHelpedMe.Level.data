@@ -96,7 +96,7 @@ Level =
 			float IndividualSpawnVariation = 0,
 			float GroupSpawnInterval = 0,
 			float GroupSpawnVariation = 0,
-			int SpawnsPerGroup = 4,
+			int SpawnsPerGroup = 1,
 		},
 	},
 	Cog = 
@@ -111,7 +111,7 @@ Level =
 		},
 		Transform = 
 		{
-			Vec3 Translation = [-14.9231091, 9.12482929, -23.9293823],
+			Vec3 Translation = [-33.2119713, 20.3076706, -53.0852623],
 			Vec3 Scale = [1, 1, 1],
 			Quat Rotation = [0.0432493165, 0.949191034, 0.150337026, -0.273065448],
 		},
@@ -128,7 +128,7 @@ Level =
 		EditorCameraController = 
 		{
 			ControlMode ControlMode = Orbit,
-			float LookDistance = 29.5285797,
+			float LookDistance = 65.7170258,
 			float VerticalAngle = 0.314159155,
 			float HorizontalAngle = 15.147727,
 			Vec3 LookTarget = [0, 0, -0.139146984],
