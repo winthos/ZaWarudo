@@ -1,0 +1,23 @@
+class PlayerFireController : ZilchComponent
+{
+  [Property]
+  var Bullet : Archetype = null;
+  
+  var Camera : Cog = null;
+  
+  function Initialize(init : CogInitializer)
+  {
+    Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+    this.Camera = this.Space.FindObjectByName("Camera");
+  }
+
+  function OnLogicUpdate(event : UpdateEvent)
+  {
+    Console.WriteLine(this.Owner.Orientation.WorldForward);
+    if (Zero.Keyboard.KeyIsDown(Keys.Space))
+    {
+      var bullet = this.Space.CreateAtPosition(this.Bullet, this.Owner.Transform.Translation + -this.Owner.Orientation.WorldForward);
+      bullet.RigidBody.ApplyLinearVelocity(-this.Owner.Orientation.WorldForward * 153);
+    }
+  }
+}

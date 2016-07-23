@@ -15,12 +15,12 @@ Level =
 			bool Active = true,
 			bool WakeUpOnChange = false,
 			bool LocalSpaceDirection = true,
-			float Strength = 10,
+			float Strength = 0,
 			Vec3 Direction = [0, -1, 0],
 		},
 		DragEffect = 
 		{
-			bool Active = true,
+			bool Active = false,
 			bool WakeUpOnChange = false,
 			float Drag = 0.699999988,
 		},
@@ -64,11 +64,11 @@ Level =
 			},
 			ViewportScaling Scaling = Letterbox,
 			Vec2 Resolution = [1280, 720],
-			Vec4 MarginColor = [0, 0, 0, 1],
+			Vec4 MarginColor = [0.0309599787, 0.0161999986, 0.0899999738, 1],
 		},
 		ForwardRenderer = 
 		{
-			Vec4 ClearColor = [0.155000001, 0.155000001, 0.155000001, 1],
+			Vec4 ClearColor = [0.0242000073, 0.0353540182, 0.110000014, 1],
 			bool DrawNonVisible = false,
 			bool DrawDebugObjects = true,
 			bool DrawEditorIcons = true,
@@ -92,7 +92,7 @@ Level =
 		},
 		EnemySpawner = 
 		{
-			float IndividualSpawnInterval = 5,
+			float IndividualSpawnInterval = 1,
 			float IndividualSpawnVariation = 0,
 			float GroupSpawnInterval = 0,
 			float GroupSpawnVariation = 0,
@@ -111,9 +111,9 @@ Level =
 		},
 		Transform = 
 		{
-			Vec3 Translation = [-33.2119713, 20.3076706, -53.0852623],
+			Vec3 Translation = [3.71714878, 2.82175851, 5.5021677],
 			Vec3 Scale = [1, 1, 1],
-			Quat Rotation = [0.0432493165, 0.949191034, 0.150337026, -0.273065448],
+			Quat Rotation = [-0.189071462, 0.285777062, 0.0576227568, 0.937690258],
 		},
 		Camera = 
 		{
@@ -128,10 +128,10 @@ Level =
 		EditorCameraController = 
 		{
 			ControlMode ControlMode = Orbit,
-			float LookDistance = 65.7170258,
-			float VerticalAngle = 0.314159155,
-			float HorizontalAngle = 15.147727,
-			Vec3 LookTarget = [0, 0, -0.139146984],
+			float LookDistance = 7.28166676,
+			float VerticalAngle = 0.397934973,
+			float HorizontalAngle = 11.9747219,
+			Vec3 LookTarget = [-0.0267273001, 0, -0.0695234686],
 			float MoveSensitivity = 1,
 		},
 		EditorRenderer = 
@@ -520,7 +520,7 @@ Level =
 		},
 		BoxCollider = 
 		{
-			bool Ghost = false,
+			bool Ghost = true,
 			bool SendsMessages = true,
 			bool Seamless = true,
 			string MaterialName = "4de020863e872da8:DefaultPhysicsMaterial",
@@ -541,6 +541,10 @@ Level =
 			float Pitch = 0,
 			bool Positional = true,
 			int Version = 1,
+		},
+		PlayerFireController = 
+		{
+			string Bullet = "5793c91d5b29a438:Bullet",
 		},
 		Hierarchy = 
 		{
@@ -1621,90 +1625,6 @@ Level =
 		},
 		TimeStopParticle = 
 		{
-		},
-	},
-	Cog = 
-	{
-		LinkId = 
-		{
-			uint Id = 33,
-		},
-		Named = 
-		{
-			string Name = "Boom",
-		},
-		Archetyped = 
-		{
-			string Name = "578838535d3beb45:ExplosionParticle",
-		},
-		Transform = 
-		{
-			Vec3 Translation = [0, 0, -0.139146984],
-			Vec3 Scale = [1, 1, 1],
-			Quat Rotation = [0, 0, 0, 1],
-		},
-		SpriteParticleSystem = 
-		{
-			bool Visible = true,
-			bool VisibilityCulling = true,
-			bool VisibilityEvents = true,
-			bool CastShadows = false,
-			SystemChildMode ChildMode = Independent,
-			SystemSpace SystemSpace = WorldSpace,
-			uint DrawOrder = 0,
-			float WarmUpTime = 0,
-			ParticleGeometry GeometryMode = Billboarded,
-			ParticleRenderMode RenderMode = Additive,
-			ParticleSortMode SortMode = Youngest,
-			ParticleAnimation ParticleAnimation = Single,
-			string Texture = "5310e87a46f22c48:FireParticle02",
-			Vec4 Tint = [0.879999995, 0.598399997, 0.598399997, 1],
-			float VelocityScale = 1,
-			float LengthScale = 1,
-			float MaxParticleSize = 100,
-			Vec3 SystemSize = [4, 4, 4],
-		},
-		SphericalParticleEmitter = 
-		{
-			bool Active = true,
-			uint EmitCount = 0,
-			float EmitRate = 250,
-			float EmitVariance = 0,
-			float Size = 3,
-			float SizeVariance = 0.5,
-			float Lifetime = 1,
-			float LifetimeVariance = 0.200000003,
-			float Spin = 0,
-			float SpinVariance = 50,
-			bool RandomSpin = true,
-			float Fill = 1,
-			float EmitterVelocityPercent = 0,
-			Vec3 StartVelocity = [0, 0, 0],
-			Vec3 RandomVelocity = [2, 2, 2],
-			Vec3 TangentVelocity = [0, 0, 0],
-			Vec3 EmitterSize = [3, 3, 3],
-			bool FastMovingEmitter = false,
-		},
-		LinearParticleAnimator = 
-		{
-			Vec3 Force = [0, 0, 0],
-			Vec3 RandomForce = [0, 0, 0],
-			float Torque = 15,
-			float Growth = 0,
-			float Dampening = 0,
-			Vec3 Twist = [0, 0, 0],
-		},
-		ParticleColorAnimator = 
-		{
-			Vec4 Color0 = [1, 1, 1, 0],
-			Vec4 Color1 = [1, 0.450099975, 0.415000021, 1],
-			Vec4 Color2 = [1, 0.539999843, 0, 1],
-			Vec4 Color3 = [1, 0.980800033, 0.519999981, 1],
-			Vec4 Color4 = [1, 1, 1, 0],
-		},
-		ParticleDissipate = 
-		{
-			float Lifetime = 1,
 		},
 	},
 },
