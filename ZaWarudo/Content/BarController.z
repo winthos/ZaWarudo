@@ -1,0 +1,25 @@
+class BarController : ZilchComponent
+{
+  var Camera : Cog = null;
+  
+  var COwner : Cog = null;
+  
+  function Initialize(init : CogInitializer)
+  {
+    this.Camera = this.Space.FindObjectByName("Camera");
+    Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+    if (this.Owner.Parent != null)
+    {
+      this.COwner = this.Owner.Parent;
+    }
+    else
+      this.Owner.Destroy();
+    
+  }
+
+  function OnLogicUpdate(event : UpdateEvent)
+  {
+    this.Owner.Orientation.LookAtPoint(this.Camera.Transform.WorldTranslation);
+    this.Owner.Area.Size = Real2(this.COwner.EnemyController.AmountStoppedTime / 10.0, 1);
+  }
+}
