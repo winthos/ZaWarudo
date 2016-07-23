@@ -5,10 +5,14 @@ class PlayerFireController : ZilchComponent
   
   var Camera : Cog = null;
   
+  var RayStartPos : Real3 = Real3();
+  
   function Initialize(init : CogInitializer)
   {
     Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
     this.Camera = this.Space.FindObjectByName("Camera");
+    this.RayStartPos = this.Owner.FindChildByName("PlayerRay").Transform.Translation;
+    
   }
 
   function OnLogicUpdate(event : UpdateEvent)
@@ -19,5 +23,20 @@ class PlayerFireController : ZilchComponent
       var bullet = this.Space.CreateAtPosition(this.Bullet, this.Owner.Transform.Translation + -this.Owner.Orientation.WorldForward);
       bullet.RigidBody.ApplyLinearVelocity(-this.Owner.Orientation.WorldForward * 153);
     }
+    this.RayCast();
+  }
+  
+  function RayCast()
+  {
+    var ray = Ray();
+    var filter = CastFilter();
+    filter.IgnoreKinematic = true;
+    var pray = this.Owner.FindChildByName("PlayerRay");
+    ray.Start = this.RayStartPos;
+    ray.Direction = this.Owner.Orientation.WorldForward;
+    var castResult = this.Space.PhysicsSpace.CastRayFirstFiltered(ray, filter);
+    
+    //pray.Transform.Scale = Real3(0.25,0.25, castResult.Distance);
+    pray.Transform.LocalTranslation = this.RayStartPos + Real3(0,0,castResult.Distance/2);
   }
 }
