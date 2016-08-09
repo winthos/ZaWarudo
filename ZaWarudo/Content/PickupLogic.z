@@ -1,0 +1,26 @@
+class PickupLogic : ZilchComponent
+{
+  
+  var Player: Cog = null;
+  function Initialize(init : CogInitializer)
+  {
+    //Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+      Zero.Connect(this.Owner, Events.CollisionStarted, this.OnCollisionStarted);
+    this.Player = this.Space.FindObjectByName("Player");
+  }
+
+  function OnCollisionStarted(event : CollisionEvent)
+  {
+    //Console.WriteLine("Collided");
+    if (event.OtherObject.PlayerFireController != null)
+    {
+      event.OtherObject.PlayerFireController.Camera.ZeroCameraController.SpeedStacks += 1;
+      
+      this.Owner.Destroy();
+    }
+  }
+
+  function OnLogicUpdate(event : UpdateEvent)
+  {
+  }
+}

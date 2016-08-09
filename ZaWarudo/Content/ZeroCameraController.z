@@ -67,6 +67,11 @@ class ZeroCameraController : ZilchComponent
     [Property]
     var MovementSpeed : Real = 0.04;
     
+    //speed modifier for normal time
+    [Property]
+    var SpeedStacks : Integer = 0;
+    
+    
     // Used to store mouse state so we can use it during logic update.
     var LeftMouseDown : Boolean = false;
     var RightMouseDown : Boolean = false;
@@ -279,7 +284,7 @@ class ZeroCameraController : ZilchComponent
         {
             //while normal time is flowing, the player always moves in
             //the it's Forward Direction
-            this.Player.Transform.WorldTranslation += this.Player.Orientation.WorldForward * -this.MovementSpeed;
+            this.Player.Transform.WorldTranslation += this.Player.Orientation.WorldForward * -this.MovementSpeed * (this.SpeedStacks + 1);
             
             //this stuff only happens Once whenever we start/switch back to normal time
             if(this.DoThisOnceAfterSwitchingBackToNormalTime == true)
@@ -349,7 +354,7 @@ class ZeroCameraController : ZilchComponent
                 
                 //move the player forward ** this is negative because the player's forward is actually 
                 // backwards because the Zero Orientation thing is wierd
-                this.Player.Transform.WorldTranslation += this.Player.Orientation.WorldForward * -0.5;
+                this.Player.Transform.WorldTranslation += this.Player.Orientation.WorldForward * -this.MovementSpeed;
             }
         }
         

@@ -96,7 +96,7 @@ Level =
 			float IndividualSpawnVariation = 0,
 			float GroupSpawnInterval = 0,
 			float GroupSpawnVariation = 0,
-			int SpawnsPerGroup = 1,
+			int SpawnsPerGroup = 0,
 		},
 	},
 	Cog = 
@@ -111,9 +111,9 @@ Level =
 		},
 		Transform = 
 		{
-			Vec3 Translation = [10.5368385, 1.30504227, -2.43615723],
+			Vec3 Translation = [308.249329, 76.539711, 238.987549],
 			Vec3 Scale = [1, 1, 1],
-			Quat Rotation = [-0.0377491154, 0.777368367, 0.0468649305, 0.626160622],
+			Quat Rotation = [-0.0868529677, 0.437855184, 0.0425462313, 0.893828392],
 		},
 		Camera = 
 		{
@@ -128,10 +128,10 @@ Level =
 		EditorCameraController = 
 		{
 			ControlMode ControlMode = Orbit,
-			float LookDistance = 10.8629808,
-			float VerticalAngle = 0.120427541,
-			float HorizontalAngle = 10.7809343,
-			Vec3 LookTarget = [0, 0, -0.139146984],
+			float LookDistance = 397.564545,
+			float VerticalAngle = 0.19373104,
+			float HorizontalAngle = 11.6553574,
+			Vec3 LookTarget = [0, 0, -0.139146924],
 			float MoveSensitivity = 1,
 		},
 		EditorRenderer = 
@@ -239,6 +239,7 @@ Level =
 							float PlayersTotalStoppedTime = 7,
 							float EnemysTotalStoppedTime = 10,
 							float MovementSpeed = 0.150000006,
+							int SpeedStacks = 0,
 						},
 						Hierarchy = 
 						{
@@ -528,6 +529,82 @@ Level =
 								{
 								},
 							},
+							Cog = 
+							{
+								LinkId = 
+								{
+									uint Id = 12,
+								},
+								Named = 
+								{
+									string Name = "STARS",
+								},
+								Transform = 
+								{
+									Vec3 Translation = [-7.68532573e-007, 2.28268647, -35.7408447],
+									Vec3 Scale = [1, 1, 1],
+									Quat Rotation = [0.149437979, 1.1051899e-008, 3.26606986e-009, 0.988771141],
+								},
+								SpriteParticleSystem = 
+								{
+									bool Visible = true,
+									bool VisibilityCulling = true,
+									bool VisibilityEvents = true,
+									bool CastShadows = false,
+									SystemChildMode ChildMode = Independent,
+									SystemSpace SystemSpace = WorldSpace,
+									uint DrawOrder = 0,
+									float WarmUpTime = 0,
+									ParticleGeometry GeometryMode = Billboarded,
+									ParticleRenderMode RenderMode = Additive,
+									ParticleSortMode SortMode = Youngest,
+									ParticleAnimation ParticleAnimation = Single,
+									string Texture = "5310e87946ed955b:Twinkle",
+									Vec4 Tint = [1, 1, 1, 1],
+									float VelocityScale = 1,
+									float LengthScale = 1,
+									float MaxParticleSize = 100,
+									Vec3 SystemSize = [4, 4, 4],
+								},
+								SphericalParticleEmitter = 
+								{
+									bool Active = true,
+									uint EmitCount = 0,
+									float EmitRate = 300,
+									float EmitVariance = 0,
+									float Size = 0.75,
+									float SizeVariance = 1,
+									float Lifetime = 9,
+									float LifetimeVariance = 0.200000003,
+									float Spin = 0,
+									float SpinVariance = 50,
+									bool RandomSpin = true,
+									float Fill = 1,
+									float EmitterVelocityPercent = 0,
+									Vec3 StartVelocity = [0, 0, 0],
+									Vec3 RandomVelocity = [0.5, 0.5, 0.5],
+									Vec3 TangentVelocity = [0, 0, 0],
+									Vec3 EmitterSize = [80, 80, 80],
+									bool FastMovingEmitter = false,
+								},
+								LinearParticleAnimator = 
+								{
+									Vec3 Force = [0, 0, 0],
+									Vec3 RandomForce = [0, 0, 0],
+									float Torque = 0,
+									float Growth = 0,
+									float Dampening = 0,
+									Vec3 Twist = [0, 0, 0],
+								},
+								ParticleColorAnimator = 
+								{
+									Vec4 Color0 = [1, 1, 1, 0],
+									Vec4 Color1 = [1, 1, 1, 1],
+									Vec4 Color2 = [1, 1, 1, 1],
+									Vec4 Color3 = [1, 1, 1, 1],
+									Vec4 Color4 = [1, 1, 1, 0],
+								},
+							},
 						},
 					},
 				},
@@ -538,7 +615,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 12,
+			uint Id = 13,
 		},
 		Named = 
 		{
@@ -578,7 +655,7 @@ Level =
 			bool SendsMessages = true,
 			bool Seamless = true,
 			string MaterialName = "4de020863e872da8:DefaultPhysicsMaterial",
-			string SerializedGroupName = "4e740859314e5515:DefaultGroup",
+			string SerializedGroupName = "5793dcb131f0774a:Player",
 			Vec3 Offset = [0, 0, 0],
 			Vec3 Size = [0.5, 0.5, 0.5],
 		},
@@ -606,7 +683,7 @@ Level =
 			{
 				LinkId = 
 				{
-					uint Id = 13,
+					uint Id = 14,
 				},
 				Named = 
 				{
@@ -646,7 +723,7 @@ Level =
 					bool SendsMessages = true,
 					bool Seamless = true,
 					string MaterialName = "4de020863e872da8:DefaultPhysicsMaterial",
-					string SerializedGroupName = "4e740859314e5515:DefaultGroup",
+					string SerializedGroupName = "5793dcb131f0774a:Player",
 					Vec3 Offset = [0, 0, 0],
 					Vec3 Size = [0.5, 0.5, 0.5],
 				},
@@ -655,7 +732,7 @@ Level =
 			{
 				LinkId = 
 				{
-					uint Id = 14,
+					uint Id = 15,
 				},
 				Named = 
 				{
@@ -695,7 +772,7 @@ Level =
 					bool SendsMessages = true,
 					bool Seamless = true,
 					string MaterialName = "4de020863e872da8:DefaultPhysicsMaterial",
-					string SerializedGroupName = "4e740859314e5515:DefaultGroup",
+					string SerializedGroupName = "5793d54138b869e7:Brah",
 					Vec3 Offset = [0, 0, 0],
 					Vec3 Size = [0.5, 0.5, 0.5],
 				},
@@ -706,7 +783,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 15,
+			uint Id = 16,
 		},
 		Named = 
 		{
@@ -755,7 +832,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 16,
+			uint Id = 17,
 		},
 		Named = 
 		{
@@ -789,12 +866,22 @@ Level =
 			Vec3 Velocity = [0, 0, 0],
 			Vec3 AngularVelocity = [0, 0, 0],
 		},
+		SphereCollider = 
+		{
+			bool Ghost = false,
+			bool SendsMessages = true,
+			bool Seamless = true,
+			string MaterialName = "4de020863e872da8:DefaultPhysicsMaterial",
+			string SerializedGroupName = "4e740859314e5515:DefaultGroup",
+			Vec3 Offset = [0, 0, 0],
+			float Radius = 1,
+		},
 	},
 	Cog = 
 	{
 		LinkId = 
 		{
-			uint Id = 17,
+			uint Id = 18,
 		},
 		Named = 
 		{
@@ -843,7 +930,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 18,
+			uint Id = 19,
 		},
 		Named = 
 		{
@@ -892,7 +979,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 19,
+			uint Id = 20,
 		},
 		Named = 
 		{
@@ -941,7 +1028,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 20,
+			uint Id = 21,
 		},
 		Named = 
 		{
@@ -990,7 +1077,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 21,
+			uint Id = 22,
 		},
 		Named = 
 		{
@@ -1039,7 +1126,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 22,
+			uint Id = 23,
 		},
 		Named = 
 		{
@@ -1088,7 +1175,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 23,
+			uint Id = 24,
 		},
 		Named = 
 		{
@@ -1137,7 +1224,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 24,
+			uint Id = 25,
 		},
 		Named = 
 		{
@@ -1186,7 +1273,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 25,
+			uint Id = 26,
 		},
 		Named = 
 		{
@@ -1235,7 +1322,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 26,
+			uint Id = 27,
 		},
 		Named = 
 		{
@@ -1284,7 +1371,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 27,
+			uint Id = 28,
 		},
 		Named = 
 		{
@@ -1333,7 +1420,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 28,
+			uint Id = 29,
 		},
 		Named = 
 		{
@@ -1382,7 +1469,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 29,
+			uint Id = 30,
 		},
 		Named = 
 		{
@@ -1431,7 +1518,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 30,
+			uint Id = 31,
 		},
 		Named = 
 		{
@@ -1470,7 +1557,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 31,
+			uint Id = 32,
 		},
 		Named = 
 		{
@@ -1519,7 +1606,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 32,
+			uint Id = 33,
 		},
 		Named = 
 		{
@@ -1568,7 +1655,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 33,
+			uint Id = 34,
 		},
 		Named = 
 		{
@@ -1651,7 +1738,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 34,
+			uint Id = 35,
 		},
 		Named = 
 		{

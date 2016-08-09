@@ -28,15 +28,28 @@ class PlayerFireController : ZilchComponent
   
   function RayCast()
   {
+    var seq = Actions.Sequence(this.Owner.Actions);
     var ray = Ray();
     var filter = CastFilter();
-    filter.IgnoreKinematic = true;
+    filter.CollisionGroup = CollisionGroup.Brah;
+    filter.IgnoreGhost = true;
     var pray = this.Owner.FindChildByName("PlayerRay");
-    ray.Start = this.RayStartPos;
-    ray.Direction = this.Owner.Orientation.WorldForward;
+    ray.Start = pray.Transform.WorldTranslation;
+    ray.Direction = Math.Normalize(-this.Owner.Orientation.WorldForward);
+    Console.WriteLine(ray.Direction);
+    
     var castResult = this.Space.PhysicsSpace.CastRayFirstFiltered(ray, filter);
     
-    //pray.Transform.Scale = Real3(0.25,0.25, castResult.Distance);
-    pray.Transform.LocalTranslation = this.RayStartPos + Real3(0,0,castResult.Distance/2);
+    //Console.WriteLine(castResult.Distance);
+    if (castResult.Distance > 800.0)
+    {
+      pray.Transform.Scale = Real3(0.25,0.25,0.5);
+      pray.Transform.LocalTranslation = this.RayStartPos;
+      return;
+    }
+      pray.Transform.Scale = Real3(0.25,0.25, castResult.Distance);
+      
+    pray.Transform.LocalTranslation = this.RayStartPos + Real3(0,0,-castResult.Distance/6);
+    
   }
 }

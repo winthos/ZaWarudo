@@ -23,6 +23,10 @@ class EnemyController : ZilchComponent
     
     var Active : Boolean = true;
     
+    [Property]
+    var Health : Integer = 15;
+    
+    
     function Initialize(init : CogInitializer)
     {
         Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
