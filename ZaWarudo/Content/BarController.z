@@ -4,6 +4,7 @@ class BarController : ZilchComponent
   
   var COwner : Cog = null;
   
+  [Property]
   var Who : Integer = 1; // 0 = player 1 = enemy 
   
   function Initialize(init : CogInitializer)

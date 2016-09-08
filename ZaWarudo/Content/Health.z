@@ -1,0 +1,59 @@
+class DamageEvent : ZilchEvent
+{
+  var Amount : Integer = 0;
+}
+class HealEvent : ZilchEvent
+{
+  var Amount : Integer = 0;
+  
+
+}
+
+class Health : ZilchComponent
+{
+  [Property]
+  var Health : Integer = 1;
+  
+  [Property]
+  var MaxHealth : Integer = -1;
+  
+  [Property]
+  var DestroyAtZero : Boolean = false;
+  
+  var HPBar : Cog = null;
+  
+  function Initialize(init : CogInitializer)
+  {
+    if (this.MaxHealth < 0)
+      this.MaxHealth = this.Health;
+    //Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+    Zero.Connect(this.Owner, "Damage", this.OnDamage);
+    Zero.Connect(this.Owner, "Heal", this.OnHeal);
+    this.HPBar = this.Space.FindObjectByName("HPBar");
+    this.HPBar.Area.Size = Real2(this.HPBar.Area.Size.X, this.Health);
+  }
+
+  function OnHeal(event : HealEvent)
+  {
+    this.Health += event.Amount;
+    if (this.Health >= this.MaxHealth)
+      this.Health = this.MaxHealth;
+    this.HPBar.Area.Size = Real2(this.HPBar.Area.Size.X, this.Health);
+  }
+
+  function OnDamage(event : DamageEvent)
+  {
+    this.Health -= event.Amount;
+    
+    if (this.Health <= 0 && this.DestroyAtZero)
+    {
+      this.Owner.Destroy();
+      //send a DeathEvent so different things with health can react differently
+    }
+    this.HPBar.Area.Size = Real2(this.HPBar.Area.Size.X, this.Health);
+  }
+
+  function OnLogicUpdate(event : UpdateEvent)
+  {
+  }
+}

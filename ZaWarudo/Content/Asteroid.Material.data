@@ -1,0 +1,24 @@
+Material = 
+{
+	Lambert = 
+	{
+	},
+	EmissiveMapping = 
+	{
+		float EmissiveScale = 0.100000001,
+		string EmissiveMapTexture = "5310e87a46f2ca03:FireParticle03",
+		Vec2 EmissiveScroll = [1, 1],
+		Vec2 EmissiveTiling = [1, 1],
+		Vec2 EmissiveOffset = [0, 0],
+	},
+	ModulateModelColor = 
+	{
+	},
+	TextureDiffuse = 
+	{
+		string DiffuseTexture = "5310e87a46e5001e:SmallRock0",
+		Vec2 DiffuseScroll = [1, -1],
+		Vec2 DiffuseTiling = [1, 1],
+		Vec2 DiffuseOffset = [0, 0],
+	},
+},

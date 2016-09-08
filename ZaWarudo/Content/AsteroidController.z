@@ -1,0 +1,154 @@
+class AsteroidSpawnController : ZilchComponent
+{
+  var SmallAsteroid : Archetype = Archetype.Find("SmallAsteroid");
+  var MediumAsteroid : Archetype = Archetype.Find("MediumAsteroid");
+  var LargeAsteroid : Archetype = Archetype.Find("LargeAsteroid");
+  
+  //speed is influenced by the player's speed stacks
+  
+  var SpawnTimer : Real;
+  
+  [Property]
+  var DefaultSpawnTime : Real = 5.0;
+  
+  [Property]
+  var SpawnTimeVariance : Real = 2.0;
+  
+  var RNG : Random = Random();
+  var Player : Cog = null;
+  var Camera : Cog = null;
+  
+  function Initialize(init : CogInitializer)
+  {
+    this.Player = this.LevelSettings.EnemySpawner.Player;
+    this.Camera = this.LevelSettings.EnemySpawner.Camera;
+    this.SpawnTimeCalc();
+    Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+  }
+
+  function OnLogicUpdate(event : UpdateEvent)
+  {
+    if (this.LevelSettings.EnemySpawner.Camera.ZeroCameraController.EnemyHasStoppedTime ||
+        !this.LevelSettings.EnemySpawner.Camera.ZeroCameraController.TimeIsFlowingNormally)
+        return;
+    
+    if (this.SpawnTimer > 0)
+    {
+      this.SpawnTimer -= event.Dt;
+      if (this.SpawnTimer <= 0)
+      {
+        this.LaunchAsteroid();
+        this.SpawnTimeCalc();
+      }
+    }
+
+  }
+  
+  function SpawnTimeCalc()
+  {
+    this.SpawnTimer = this.DefaultSpawnTime + this.RNG.Range(-this.SpawnTimeVariance,this.SpawnTimeVariance);
+  }
+  
+  function LaunchAsteroid()
+  {
+    //location of interest is based off of player worldright and worldup
+    var offsetx = (this.Player.Orientation.WorldRight.X + this.Player.Orientation.WorldUp.X)*this.Camera.ZeroCameraController.MaxDistance/2;
+    var offsety = (this.Player.Orientation.WorldRight.Y + this.Player.Orientation.WorldUp.Y)*this.Camera.ZeroCameraController.MaxDistance/2;
+    var offsetz = (this.Player.Orientation.WorldRight.Z + this.Player.Orientation.WorldUp.Z)*this.Camera.ZeroCameraController.MaxDistance/2;
+    var pos = this.Owner.Transform.WorldTranslation + Real3(this.RNG.Range(-offsetx,offsetx),
+                                                       this.RNG.Range(-offsety,offsety),
+                                                       this.RNG.Range(-offsetz,offsetz));
+    var creationchance = this.RNG.RangeInclusiveMax(0,100 + this.Camera.ZeroCameraController.SpeedStacks);
+    
+    var asteroid : Cog = null;
+    
+    if (creationchance < 75)
+    {
+      asteroid = this.Space.CreateAtPosition(this.SmallAsteroid, pos);
+    }
+    else if (creationchance >= 75 && creationchance < 150)
+    {
+      asteroid = this.Space.CreateAtPosition(this.MediumAsteroid, pos);
+    }
+    else
+    {
+      asteroid = this.Space.CreateAtPosition(this.LargeAsteroid, pos);
+    }
+    asteroid.AsteroidController.Direction = this.Player.Orientation.WorldForward;
+    asteroid.AsteroidController.Move();
+    Console.WriteLine("ASTEROID SPAWNED");
+  }
+}
+
+class AsteroidController : ZilchComponent
+{
+   
+  [Property]
+  var Health : Integer = 20;
+  
+  var OrigColour : Real4;
+  
+  [Property]
+  var DamageColour : Real4 = Real4(0.7,0.0,0.0,1.0);
+  
+  var Direction : Real3;
+  
+  var MoveSpeed : Real = 1;
+  
+  var Movements : Integer = 0;
+  
+  
+  function Initialize(init : CogInitializer)
+  {
+    this.OrigColour = this.Owner.Model.Color;
+    Zero.Connect(this.Owner, Events.CollisionStarted, this.OnCollisionStarted);
+  }
+  
+  function Move()
+  {
+    var seq = Actions.Sequence(this.Owner.Actions);
+    Actions.Property(seq, @this.Owner.Transform.WorldTranslation, this.Owner.Transform.WorldTranslation + this.Direction * this.MoveSpeed, 0.1, Ease.Linear);
+    this.Movements += 1;
+    if (this.Movements % 50 == 0)
+    {
+      this.MoveSpeed += this.MoveSpeed/4.0;
+    }
+    if (this.LevelSettings.EnemySpawner.Camera.ZeroCameraController.Calc3DDistance(this.Owner.Transform.WorldTranslation, 
+                                                                            this.LevelSettings.EnemySpawner.Player.Transform.Translation) > 100.0)
+    {
+      Actions.Call(seq, this.Expire);
+    }  
+    Actions.Call(seq, this.Move); 
+    
+  }
+
+  function OnCollisionStarted(event : CollisionEvent)
+  {
+    if (event.OtherObject == this.LevelSettings.EnemySpawner.Player)
+    {
+      this.TakeDamage(1);
+      var ev = DamageEvent();
+      ev.Amount = 1;
+      event.OtherObject.DispatchEvent("Damage", ev);
+    }
+  }
+  function TakeDamage(amt : Integer)
+  {
+    this.Health -= amt;
+    if (this.Health <= 0)
+    {
+      this.Expire();
+    }
+    else
+    {
+      var seq = Actions.Sequence(this.Owner.Actions);
+      Actions.Property(seq, @this.Owner.Sprite.Color, this.DamageColour, 0.25, Ease.Linear);
+      Actions.Property(seq, @this.Owner.Sprite.Color, this.OrigColour, 0.25, Ease.Linear);
+      //Flash a different colour for a short time
+    }
+  }
+  function Expire()
+  {
+    this.Owner.Destroy();
+  }
+}

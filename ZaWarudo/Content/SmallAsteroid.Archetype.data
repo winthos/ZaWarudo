@@ -1,0 +1,58 @@
+Cog = 
+{
+	LinkId = 
+	{
+		uint Id = 1,
+	},
+	Named = 
+	{
+		string Name = "Sphere",
+	},
+	Archetyped = 
+	{
+		string Name = "57ce26e0f085a9e5:SmallAsteroid",
+	},
+	Transform = 
+	{
+		Vec3 Translation = [0, 0, 0],
+		Vec3 Scale = [0.75, 0.75, 0.75],
+		Quat Rotation = [0.5, 0.5, 0.5, 0.5],
+	},
+	Model = 
+	{
+		bool Visible = true,
+		bool VisibilityCulling = true,
+		bool VisibilityEvents = true,
+		bool CastShadows = true,
+		string MaterialName = "57ce27459a79f42d:Asteroid",
+		string MeshName = "4de0354322b376ae:Sphere",
+		Vec4 Color = [0.639999986, 0.488639951, 0.364799976, 1],
+	},
+	RigidBody = 
+	{
+		bool Static = false,
+		bool Asleep = false,
+		bool Kinematic = false,
+		bool RotationLocked = false,
+		bool Mode2D = false,
+		bool AllowSleep = true,
+		bool Inherit2DMode = true,
+		Vec3 Velocity = [0, 0, 0],
+		Vec3 AngularVelocity = [0, 0, 0],
+	},
+	SphereCollider = 
+	{
+		bool Ghost = true,
+		bool SendsMessages = true,
+		bool Seamless = true,
+		string MaterialName = "4de020863e872da8:DefaultPhysicsMaterial",
+		string SerializedGroupName = "4e740859314e5515:DefaultGroup",
+		Vec3 Offset = [0, 0, 0],
+		float Radius = 1,
+	},
+	AsteroidController = 
+	{
+		int Health = 20,
+		Vec4 DamageColour = [0.699999988, 0, 0, 1],
+	},
+},

@@ -26,12 +26,16 @@ J           - Press this to simulate an enemy using time stop. Unless the player
 K           - Press this to end the Enemy Stopped Time early. 
 
 */
+//camera old transform =   (0,3.0671, 4.09373)
+//       old rotation =    -17.2
 
 class ZeroCameraController : ZilchComponent
 {
     //need a camera so we can see stuff 
     [Dependency]
     var Camera : Camera = null;
+    
+    var Bruh : Cog = null;
     
     //grab the objects in the level we need as Cogs because I'm putting
     //everything on this one script instead of seperating it into
@@ -56,6 +60,10 @@ class ZeroCameraController : ZilchComponent
     [Property]
     var CameraRadius : Real = 5.0;
     
+    
+    [Property]
+    var PlayerMaximumMoveDistance : Real = 10.0;
+    
     //this is the player's maximum amount of time he has to spend in stopped time
     [Property]
     var PlayersTotalStoppedTime : Real = 7.0;
@@ -66,6 +74,29 @@ class ZeroCameraController : ZilchComponent
     //this changes forward movement speed while in normal time
     [Property]
     var MovementSpeed : Real = 0.04;
+    
+    
+    //speed modifier for normal time
+    [Property]
+    var SpeedStacks : Integer = 0;
+    
+    //Score that is tied to number of rifts collected
+    var Score : Integer = 0;
+    
+    // Keeps track of the exact offset the camera has from the default area;
+    var CameraRotation : Quaternion;
+    
+    //TESTING ZONE
+    var DefaultCamOffset : Real3 = Real3();
+    
+    // max distance from player to the edge of the screen in normal time
+    var MaxDistance : Real = 8.0;
+    
+    var CamMoveSpeed : Real = 100;
+    
+    
+    //
+    
     
     // Used to store mouse state so we can use it during logic update.
     var LeftMouseDown : Boolean = false;
@@ -99,6 +130,7 @@ class ZeroCameraController : ZilchComponent
     
     function Initialize(init : CogInitializer)
     {
+        
         var viewport = this.Camera.Viewport;
         
         Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
@@ -113,6 +145,8 @@ class ZeroCameraController : ZilchComponent
         
         //the player object
         this.Player = this.Space.FindObjectByName("Player");
+        //the test object that the camera decides to follow
+        this.Bruh = this.Space.FindObjectByName("bruh");
         //the yellow filter that makes the screen yellow if the player stopped time
         this.WorldFilter = this.Space.FindObjectByName("WorldFilter");
         //the purple filter that makes the screen purple if the enemy stops time
@@ -135,6 +169,10 @@ class ZeroCameraController : ZilchComponent
 
         //initialize this to false so we only see it when time is stopped
         this.WorldFilter.Sprite.Visible = false;
+        
+        
+        
+        this.CameraRotation = this.Owner.Transform.LocalRotation;
     }
 
 
@@ -158,7 +196,7 @@ class ZeroCameraController : ZilchComponent
             this.WorldFilter.Sprite.Visible = true;
             var hinjaku = new DioShout();
             this.GameSession.DispatchEvent("THE WORLD", hinjaku);
-            
+            this.DefaultCamOffset = Real3();
             this.Space.CreateAtPosition(Archetype.Find("ZaWarudoCircle"), this.Player.Transform.WorldTranslation);
         }
         
@@ -166,6 +204,10 @@ class ZeroCameraController : ZilchComponent
         {
             this.TimeIsFlowingNormally = true;
             this.WorldFilter.Sprite.Visible = false;
+            //move the test object onto the player
+            this.Bruh.Transform.Translation = this.Player.Transform.Translation;
+            ////PROBABLY DOESN'T ACTUALLY WORK
+            this.Owner.Transform.LocalRotation = this.CameraRotation;
         }
         
     }
@@ -279,13 +321,15 @@ class ZeroCameraController : ZilchComponent
         {
             //while normal time is flowing, the player always moves in
             //the it's Forward Direction
-            this.Player.Transform.WorldTranslation += this.Player.Orientation.WorldForward * -this.MovementSpeed;
+            this.Bruh.Transform.WorldTranslation += this.Player.Orientation.WorldForward * -this.MovementSpeed * (this.SpeedStacks + 1);
+            this.Player.Transform.WorldTranslation += this.Player.Orientation.WorldForward * -this.MovementSpeed * (this.SpeedStacks + 1);
             
             //this stuff only happens Once whenever we start/switch back to normal time
             if(this.DoThisOnceAfterSwitchingBackToNormalTime == true)
             {
                 //change the Player's Direction so that his new "Forward" is set based on where
                 //the Camera is facing
+                this.Bruh.Transform.WorldRotation = this.Owner.Transform.WorldRotation;
                 this.Player.Transform.WorldRotation = this.Owner.Transform.WorldRotation;
                
                 //this is just so that we only set the player's new forward direction once
@@ -300,26 +344,139 @@ class ZeroCameraController : ZilchComponent
             // can maneuver in the XY plane during normal time, as to promote more usage of
             // stopped time.
             /////////////////////
-            if(Zero.Keyboard.KeyIsDown(Keys.A) == true)
+        
+/////////////////////// This is the stuff I'm changing JY_CHANGE //////////////////////
+            if(Zero.Keyboard.KeyIsDown(Keys.A))
             {
-                this.Player.Transform.WorldTranslation += this.Player.Orientation.WorldRight * 0.1;
+                if (this.Calc3DDistance(this.Player.Transform.WorldTranslation + this.Player.Orientation.WorldRight * this.MovementSpeed * (this.SpeedStacks + 1),this.Bruh.Transform.WorldTranslation)
+                    <= this.MaxDistance)
+                {
+                    
+                  this.Player.Transform.WorldTranslation += this.Player.Orientation.WorldRight * this.MovementSpeed * (this.SpeedStacks + 1);
+                  if (this.DefaultCamOffset.X > -this.MaxDistance)
+                  { 
+                    this.DefaultCamOffset += Real3(this.MaxDistance/this.CamMoveSpeed,0,0)*this.Player.Orientation.WorldRight; 
+                    this.Owner.Orientation.LookAtPoint(this.Bruh.Transform.Translation + this.DefaultCamOffset);
+                    
+                  }
+                }
+                //this.Owner.Orientation.LookAtPoint(this.Player.Transform.WorldTranslation);
             }
-            
-            if(Zero.Keyboard.KeyIsDown(Keys.D) == true)
+            else if(Zero.Keyboard.KeyIsDown(Keys.D))
             {
-                this.Player.Transform.WorldTranslation += -this.Player.Orientation.WorldRight * 0.1;
+              if (this.Calc3DDistance(this.Player.Transform.WorldTranslation - this.Player.Orientation.WorldRight * this.MovementSpeed * (this.SpeedStacks + 1),this.Bruh.Transform.WorldTranslation)
+                    <= this.MaxDistance)
+              {
+                
+                this.Player.Transform.WorldTranslation += -this.Player.Orientation.WorldRight * this.MovementSpeed * (this.SpeedStacks + 1);
+                if (this.DefaultCamOffset.X < this.MaxDistance)
+                { 
+                  this.DefaultCamOffset += Real3(this.MaxDistance/this.CamMoveSpeed,0,0)*-this.Player.Orientation.WorldRight; 
+                  this.Owner.Orientation.LookAtPoint(this.Bruh.Transform.Translation + this.DefaultCamOffset);
+                  
+                }
+              }
+                //this.Owner.Orientation.LookAtPoint(this.Player.Transform.WorldTranslation);
             }
             
             if(Zero.Keyboard.KeyIsDown(Keys.W))
             {
-                this.Player.Transform.WorldTranslation += this.Player.Orientation.WorldUp * 0.1;
+              if (this.Calc3DDistance(this.Player.Transform.WorldTranslation + this.Player.Orientation.WorldUp * this.MovementSpeed * (this.SpeedStacks + 1),this.Bruh.Transform.WorldTranslation)
+                    <= this.MaxDistance)
+              {     
+              
+                if (this.DefaultCamOffset.Y < this.MaxDistance)
+                { 
+                  this.DefaultCamOffset += Real3(0,this.MaxDistance/this.CamMoveSpeed,0)*this.Player.Orientation.WorldUp; 
+                  this.Owner.Orientation.LookAtPoint(this.Bruh.Transform.Translation + this.DefaultCamOffset);
+                  
+                }
+                this.Player.Transform.WorldTranslation += this.Player.Orientation.WorldUp * this.MovementSpeed * (this.SpeedStacks + 1);
+              }
+                //this.Owner.Orientation.LookAtPoint(this.Player.Transform.WorldTranslation);
             }
-            
-            if(Zero.Keyboard.KeyIsDown(Keys.S))
+            else if(Zero.Keyboard.KeyIsDown(Keys.S))
             {
-                this.Player.Transform.WorldTranslation += -this.Player.Orientation.WorldUp * 0.1;
+              if (this.Calc3DDistance(this.Player.Transform.WorldTranslation - this.Player.Orientation.WorldUp * this.MovementSpeed * (this.SpeedStacks + 1),this.Bruh.Transform.WorldTranslation)
+                    <= this.MaxDistance)
+              {
+              
+                if (this.DefaultCamOffset.Y > -this.MaxDistance)
+                { 
+                  this.DefaultCamOffset += Real3(0,this.MaxDistance/this.CamMoveSpeed,0)*-this.Player.Orientation.WorldUp; 
+                  this.Owner.Orientation.LookAtPoint(this.Bruh.Transform.Translation + this.DefaultCamOffset);
+                  
+                }
+                this.Player.Transform.WorldTranslation += -this.Player.Orientation.WorldUp * this.MovementSpeed * (this.SpeedStacks + 1);
+              }
+                //this.Owner.Orientation.LookAtPoint(this.Player.Transform.WorldTranslation);
             }
+            else if (!Zero.Keyboard.KeyIsDown(Keys.A) && !Zero.Keyboard.KeyIsDown(Keys.D)
+                  && !Zero.Keyboard.KeyIsDown(Keys.W) && !Zero.Keyboard.KeyIsDown(Keys.S))
+            {
+              //if above orb, move done, and so on and so forth
+              if (this.DefaultCamOffset.X > this.MaxDistance/30.0)
+              {
+                this.DefaultCamOffset -= Real3(this.MaxDistance/this.CamMoveSpeed,0,0);
+                //this.Player.Transform.WorldTranslation += this.Player.Orientation.WorldRight * 0.1;
+              }
+              else if (this.DefaultCamOffset.X < -this.MaxDistance/30.0)
+              {
+                this.DefaultCamOffset += Real3(this.MaxDistance/this.CamMoveSpeed,0,0);
+                //this.Player.Transform.WorldTranslation += -this.Player.Orientation.WorldRight * 0.1;
+              }
+              
+              if (this.DefaultCamOffset.Y > this.MaxDistance/30.0)
+              {
+                this.DefaultCamOffset -= Real3(0,this.MaxDistance/this.CamMoveSpeed,0);
+                //this.Player.Transform.WorldTranslation += -this.Player.Orientation.WorldUp * 0.1;
+              }
+              else if (this.DefaultCamOffset.Y < -this.MaxDistance/30.0)
+              {
+                this.DefaultCamOffset += Real3(0,this.MaxDistance/this.CamMoveSpeed,0);
+                //this.Player.Transform.WorldTranslation += this.Player.Orientation.WorldUp * 0.1;
+              }
+              
+              this.Owner.Orientation.LookAtPoint(this.Bruh.Transform.Translation + this.DefaultCamOffset);
+              
+              if (this.Player.Transform.WorldTranslation.X > this.Bruh.Transform.WorldTranslation.X
+                 && this.Player.Transform.WorldTranslation.X - this.Bruh.Transform.WorldTranslation.X > 0.1)
+              {
+                this.Player.Transform.WorldTranslation +=  Real3(-0.1,0,0);
+              }
+              else if (this.Player.Transform.WorldTranslation.X < this.Bruh.Transform.WorldTranslation.X
+                      && this.Bruh.Transform.WorldTranslation.X - this.Player.Transform.WorldTranslation.X > 0.1)
+              {
+                this.Player.Transform.WorldTranslation += Real3(0.1,0,0);
+              }
+              
+              if (this.Player.Transform.WorldTranslation.Y > this.Bruh.Transform.WorldTranslation.Y
+                  && this.Player.Transform.WorldTranslation.Y - this.Bruh.Transform.WorldTranslation.Y > 0.1)
+              {
+                this.Player.Transform.WorldTranslation += Real3(0,-0.1,0);
+              }
+              else if (this.Player.Transform.WorldTranslation.Y < this.Bruh.Transform.WorldTranslation.Y
+                      && this.Bruh.Transform.WorldTranslation.Y - this.Player.Transform.WorldTranslation.Y > 0.1)
+              {
+                this.Player.Transform.WorldTranslation += Real3(0,0.1,0);
+              }
+              
+              if (this.Player.Transform.WorldTranslation.Z > this.Bruh.Transform.WorldTranslation.Z
+                  && this.Player.Transform.WorldTranslation.Z - this.Bruh.Transform.WorldTranslation.Z > 0.1)
+              {
+                this.Player.Transform.WorldTranslation += Real3(0,0, -0.1);
+              }
+              else if (this.Player.Transform.WorldTranslation.Z < this.Bruh.Transform.WorldTranslation.Z
+                      && this.Bruh.Transform.WorldTranslation.Z - this.Player.Transform.WorldTranslation.Z > 0.1)
+              {
+                this.Player.Transform.WorldTranslation += Real3(0,0, 0.1);
+              }
+              
+              //this.Owner.Orientation.LookAtPoint(this.Bruh.Transform.WorldTranslation);
+            }
+            // Camera has to face a bit in the direction the player is moving in
             /////////////////////////
+            //Console.WriteLine(this.DefaultCamOffset);
         }
         
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -346,10 +503,12 @@ class ZeroCameraController : ZilchComponent
                 
                 //change rotation to match the camera's world rotation 
                 this.Player.Transform.WorldRotation = this.Owner.Transform.WorldRotation;
+                this.Bruh.Transform.WorldRotation = this.Owner.Transform.WorldRotation;
                 
                 //move the player forward ** this is negative because the player's forward is actually 
                 // backwards because the Zero Orientation thing is wierd
-                this.Player.Transform.WorldTranslation += this.Player.Orientation.WorldForward * -0.5;
+                this.Bruh.Transform.WorldTranslation += this.Player.Orientation.WorldForward * -this.MovementSpeed;
+                this.Player.Transform.WorldTranslation += this.Player.Orientation.WorldForward * -this.MovementSpeed;
             }
         }
         
@@ -389,6 +548,8 @@ class ZeroCameraController : ZilchComponent
         /////////////////////////////////
         
         // this variable CameraDir is used to calculate the "forward" direction for the player
+        if (this.TimeIsFlowingNormally == false)
+        {
             var cameraDir = Real3();
             cameraDir.X = this.CameraRadius * Math.Cos(this.Theta) * Math.Sin(this.Phi);
             cameraDir.Y = this.CameraRadius * Math.Cos(this.Phi);
@@ -431,7 +592,7 @@ class ZeroCameraController : ZilchComponent
             // Set the rotation bases for our camera
             transform.SetRotationBases(forward, up, right);
         
-        
+        }
         //RotationPivot is just a transform that always needs to be exactly where the player is
         //in order for our parenting/rigging heirarchy thing to work
         //so every frame I just keep the RotationPivot transform object where the player is.
@@ -442,8 +603,16 @@ class ZeroCameraController : ZilchComponent
           //this.RotationPivot.Transform.WorldTranslation = this.ExpFollowPos;
         }
         else
-          this.RotationPivot.Transform.WorldTranslation = this.Player.Transform.WorldTranslation;
-
+        {
+          //could probably just make rotation pivot follow bruh
+          if (this.TimeIsFlowingNormally == true)
+          {
+            this.RotationPivot.Transform.WorldTranslation = this.Bruh.Transform.WorldTranslation;
+          }
+          else
+            this.RotationPivot.Transform.WorldTranslation = this.Player.Transform.WorldTranslation;
+          
+        }
         // Make sure to clear out the translational delta of the mouse used in MouseMovement
         //this needs to reset every frame otherwise the "change in position since last frame"
         //that the Delta is tracking won't mean anything.
@@ -457,49 +626,9 @@ class ZeroCameraController : ZilchComponent
         Console.WriteLine("bruh");
     }
     
-    function CalcCameraPos()
+    function Calc3DDistance(d1 : Real3, d2 : Real3) : Real
     {
-      var cameraDir = Real3();
-            cameraDir.X = this.CameraRadius * Math.Cos(this.Theta) * Math.Sin(this.Phi);
-            cameraDir.Y = this.CameraRadius * Math.Cos(this.Phi);
-            cameraDir.Z = this.CameraRadius * Math.Sin(this.Theta) * Math.Sin(this.Phi);
-            
-            // Since the camera is always looking at the player, the forward vector is just the
-            // opposite of our position vector on the unit sphere
-            var forward = -cameraDir;
-            forward = Math.Normalize(forward);
-            
-            //var movementForward = forward;
-            //var movementRight = Real3(-forward.Z, 0.0, forward.X);
-            
-            // Build up the total world space movement of the camera
-            var movementW = Real3();
-            
-             // Compute the basis of the camera
-            var up = Real3(0.0, 1.0, 0.0);
-            // Use the world up and camera's forward to get the right vector
-            var right = Math.Cross(forward, up);
-            right = Math.Normalize(right);
-            // Now use the camera forward and right to get the camera's actual up vector
-            up = Math.Cross(right, forward);
-            up = Math.Normalize(up);
-            
-            // how far zoomed out we are (so we move faster when we're more zoomed out)
-            var moveSensitivity = 2.0 + 0.1 * this.CameraRadius;
-            // When translating, we move our target position (which implicitly moves our position)
-            this.Target += movementW * /*event.Dt*/ 0.056666667 * moveSensitivity;
-            // Set our position to be focused on our target, but back along our
-            // view vector based upon the sphere's current radius
-            var transform = this.RotationPivot.Transform;
-            transform.Translation = this.Target + cameraDir;
-            
-            // Set the rotation bases for our camera
-            transform.SetRotationBases(forward, up, right);
-        
-        
-        //RotationPivot is just a transform that always needs to be exactly where the player is
-        //in order for our parenting/rigging heirarchy thing to work
-        //so every frame I just keep the RotationPivot transform object where the player is.
-        this.RotationPivot.Transform.WorldTranslation = this.Player.Transform.WorldTranslation; // change to enemy pos
+      return Math.Sqrt((d2.X - d1.X)*(d2.X - d1.X) + (d2.Y - d1.Y)*(d2.Y - d1.Y) + (d2.Z - d1.Z)*(d2.Z - d1.Z));
+      
     }
 }
