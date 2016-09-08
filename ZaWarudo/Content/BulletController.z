@@ -1,0 +1,19 @@
+class BulletController : ZilchComponent
+{
+  var Player : Cog = null;
+  [Property]
+  var MaxDistance : Real = 800.0;
+  function Initialize(init : CogInitializer)
+  {
+    Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+    this.Player = this.Space.FindObjectByName("Player");
+  }
+
+  function OnLogicUpdate(event : UpdateEvent)
+  {
+    if (Math.Distance(this.Owner.Transform.Translation, this.Player.Transform.Translation) > this.MaxDistance)
+    {
+      this.Owner.Destroy();
+    }
+  }
+}

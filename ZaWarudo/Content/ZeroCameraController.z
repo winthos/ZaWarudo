@@ -396,7 +396,11 @@ class ZeroCameraController : ZilchComponent
             
             // Since the camera is always looking at the player, the forward vector is just the
             // opposite of our position vector on the unit sphere
+            
+            
             var forward = -cameraDir;
+            
+
             forward = Math.Normalize(forward);
             
             //var movementForward = forward;
@@ -421,6 +425,7 @@ class ZeroCameraController : ZilchComponent
             // Set our position to be focused on our target, but back along our
             // view vector based upon the sphere's current radius
             var transform = this.RotationPivot.Transform;
+            
             transform.Translation = this.Target + cameraDir;
             
             // Set the rotation bases for our camera
@@ -434,7 +439,7 @@ class ZeroCameraController : ZilchComponent
         {
           Console.WriteLine("EFollow");
           this.EFollowTimer -= event.Dt;
-          this.RotationPivot.Transform.WorldTranslation = this.ExpFollowPos;
+          //this.RotationPivot.Transform.WorldTranslation = this.ExpFollowPos;
         }
         else
           this.RotationPivot.Transform.WorldTranslation = this.Player.Transform.WorldTranslation;

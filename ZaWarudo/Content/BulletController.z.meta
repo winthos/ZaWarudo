@@ -1,0 +1,8 @@
+TextContent = 
+{
+	ZilchScriptBuilder = 
+	{
+		string Name = "BulletController",
+		uint64 ResourceId = 5793d58a48059fd5,
+	},
+},
