@@ -3,6 +3,7 @@ class PlayerFireController : ZilchComponent
   [Property]
   var Bullet : Archetype = null;
   
+  
   var Camera : Cog = null;
   
   var RayStartPos : Real3 = Real3();
@@ -17,7 +18,7 @@ class PlayerFireController : ZilchComponent
 
   function OnLogicUpdate(event : UpdateEvent)
   {
-    Console.WriteLine(this.Owner.Orientation.WorldForward);
+    //Console.WriteLine(this.Owner.Orientation.WorldForward);
     if (Zero.Keyboard.KeyIsDown(Keys.Space))
     {
       var bullet = this.Space.CreateAtPosition(this.Bullet, this.Owner.Transform.Translation + -this.Owner.Orientation.WorldForward);
@@ -36,7 +37,7 @@ class PlayerFireController : ZilchComponent
     var pray = this.Owner.FindChildByName("PlayerRay");
     ray.Start = pray.Transform.WorldTranslation;
     ray.Direction = Math.Normalize(-this.Owner.Orientation.WorldForward);
-    Console.WriteLine(ray.Direction);
+    //Console.WriteLine(ray.Direction);
     
     var castResult = this.Space.PhysicsSpace.CastRayFirstFiltered(ray, filter);
     

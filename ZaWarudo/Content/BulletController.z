@@ -21,6 +21,11 @@ class BulletController : ZilchComponent
       }
       this.Owner.Destroy();
     }
+    else if (event.OtherObject.AsteroidController != null)
+    {
+      event.OtherObject.AsteroidController.TakeDamage(1);
+      this.Owner.Destroy();
+    }
   }
 
   function OnLogicUpdate(event : UpdateEvent)

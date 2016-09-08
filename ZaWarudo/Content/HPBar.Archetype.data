@@ -1,0 +1,50 @@
+Cog = 
+{
+	LinkId = 
+	{
+		uint Id = 1,
+	},
+	Named = 
+	{
+		string Name = "HPBar",
+	},
+	Transform = 
+	{
+		Vec3 Translation = [2.28392458, -1.29183376, -3.56698751],
+		Vec3 Scale = [1.5, 0.150000006, 0.99999994],
+		Quat Rotation = [0.00802170113, 0.00802170113, 0.707061291, 0.707061291],
+	},
+	Sprite = 
+	{
+		bool Visible = true,
+		bool VisibilityCulling = true,
+		bool VisibilityEvents = true,
+		bool CastShadows = false,
+		Vec4 Color = [1, 0.960000157, 0, 0.75],
+		BlendMode BlendMode = Alpha,
+		SpriteGeometryMode GeometryMode = ZPlane,
+		string SpriteLayer = "52ad5fa30d7fcd50:DefaultSpriteLayer",
+		string SpriteSource = "5275aa4d802dd6dc:Square",
+		bool RenderMask = false,
+		bool FlipX = false,
+		bool FlipY = false,
+		bool AnimationActive = true,
+		float AnimationSpeed = 1,
+		uint StartFrame = 0,
+	},
+	Area = 
+	{
+		Vec2 Size = [1, 1],
+		Location Origin = CenterLeft,
+	},
+	Orientation = 
+	{
+		Vec3 GlobalUp = [0, 1, 0],
+		Vec3 UpVector = [0, 1, 0],
+		Vec3 ForwardVector = [0, 0, 1],
+		OrientationBases DefaultBases = ForwardZUpY,
+	},
+	BarController = 
+	{
+	},
+},

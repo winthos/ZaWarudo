@@ -29,11 +29,13 @@ class EnemySpawner : ZilchComponent
     var SpawnPositions : Array[Real3] = Array[Real3]();
     
     var Player : Cog = null;
+    var Camera : Cog = null;
     
     function Initialize(init : CogInitializer)
     {
         Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
         this.Player = this.Space.FindObjectByName("Player");
+        this.Camera = this.Space.FindObjectByName("Camera");
         this.SpawnPositions.Add(Real3(0,0,15));
         this.SpawnPositions.Add(Real3(0,0,-15));
         this.SpawnPositions.Add(Real3(15,0,0));
@@ -57,7 +59,6 @@ class EnemySpawner : ZilchComponent
 
     function OnLogicUpdate(event : UpdateEvent)
     {
-      
       
       if (this.Timer < this.NextSpawn && this.SpawnCount < this.SpawnsPerGroup)
       {

@@ -111,9 +111,9 @@ Level =
 		},
 		Transform = 
 		{
-			Vec3 Translation = [308.249329, 76.539711, 238.987549],
+			Vec3 Translation = [2.70710707, 7.70875454, 38.8477783],
 			Vec3 Scale = [1, 1, 1],
-			Quat Rotation = [-0.0868529677, 0.437855184, 0.0425462313, 0.893828392],
+			Quat Rotation = [-0.0575400852, 0.0287231691, 0.00165616197, 0.997928619],
 		},
 		Camera = 
 		{
@@ -128,10 +128,10 @@ Level =
 		EditorCameraController = 
 		{
 			ControlMode ControlMode = Orbit,
-			float LookDistance = 397.564545,
-			float VerticalAngle = 0.19373104,
-			float HorizontalAngle = 11.6553574,
-			Vec3 LookTarget = [0, 0, -0.139146924],
+			float LookDistance = 7.49781179,
+			float VerticalAngle = 0.115191504,
+			float HorizontalAngle = 6.22563553,
+			Vec3 LookTarget = [2.27870584, 6.84697914, 31.4119854],
 			float MoveSensitivity = 1,
 		},
 		EditorRenderer = 
@@ -198,9 +198,9 @@ Level =
 						},
 						Transform = 
 						{
-							Vec3 Translation = [0, 3.0670979, 4.09372997],
+							Vec3 Translation = [0, 3.42417836, 4.09372997],
 							Vec3 Scale = [1, 1, 1],
-							Quat Rotation = [-0.149437979, -1.1051899e-008, -3.26606941e-009, 0.988771141],
+							Quat Rotation = [-0.0946374834, -1.08547926e-008, -3.8710728e-009, 0.99551183],
 						},
 						Camera = 
 						{
@@ -236,6 +236,7 @@ Level =
 						ZeroCameraController = 
 						{
 							float CameraRadius = 5,
+							float PlayerMaximumMoveDistance = 10,
 							float PlayersTotalStoppedTime = 7,
 							float EnemysTotalStoppedTime = 10,
 							float MovementSpeed = 0.150000006,
@@ -295,6 +296,7 @@ Level =
 								},
 								BarController = 
 								{
+									int Who = 1,
 								},
 							},
 							Cog = 
@@ -302,6 +304,57 @@ Level =
 								LinkId = 
 								{
 									uint Id = 7,
+								},
+								Named = 
+								{
+									string Name = "HPBar",
+								},
+								Archetyped = 
+								{
+									string Name = "57ce42c9d3ab46af:HPBar",
+								},
+								Transform = 
+								{
+									Vec3 Translation = [2.27870584, -1.29183376, -3.56698751],
+									Vec3 Scale = [0.100000001, 0.100000001, 0.99999994],
+									Quat Rotation = [0.0113443974, 0, 0, 0.999935627],
+								},
+								Sprite = 
+								{
+									bool Visible = true,
+									bool VisibilityCulling = true,
+									bool VisibilityEvents = true,
+									bool CastShadows = false,
+									Vec4 Color = [0.169999957, 1, 0, 0.75],
+									BlendMode BlendMode = Alpha,
+									SpriteGeometryMode GeometryMode = ZPlane,
+									string SpriteLayer = "52ad5fa30d7fcd50:DefaultSpriteLayer",
+									string SpriteSource = "57ce41bd06a48553:bar1",
+									bool RenderMask = false,
+									bool FlipX = false,
+									bool FlipY = false,
+									bool AnimationActive = true,
+									float AnimationSpeed = 1,
+									uint StartFrame = 0,
+								},
+								Area = 
+								{
+									Vec2 Size = [1, 1],
+									Location Origin = BottomCenter,
+								},
+								Orientation = 
+								{
+									Vec3 GlobalUp = [0, 1, 0],
+									Vec3 UpVector = [0, 1, 0],
+									Vec3 ForwardVector = [0, 0, 1],
+									OrientationBases DefaultBases = ForwardZUpY,
+								},
+							},
+							Cog = 
+							{
+								LinkId = 
+								{
+									uint Id = 8,
 								},
 								Named = 
 								{
@@ -341,7 +394,7 @@ Level =
 							{
 								LinkId = 
 								{
-									uint Id = 8,
+									uint Id = 9,
 								},
 								Named = 
 								{
@@ -381,7 +434,7 @@ Level =
 							{
 								LinkId = 
 								{
-									uint Id = 9,
+									uint Id = 10,
 								},
 								Named = 
 								{
@@ -438,7 +491,7 @@ Level =
 							{
 								LinkId = 
 								{
-									uint Id = 10,
+									uint Id = 11,
 								},
 								Named = 
 								{
@@ -495,7 +548,7 @@ Level =
 							{
 								LinkId = 
 								{
-									uint Id = 11,
+									uint Id = 12,
 								},
 								Named = 
 								{
@@ -533,7 +586,7 @@ Level =
 							{
 								LinkId = 
 								{
-									uint Id = 12,
+									uint Id = 13,
 								},
 								Named = 
 								{
@@ -615,7 +668,98 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 13,
+			uint Id = 14,
+		},
+		Named = 
+		{
+			string Name = "bruh",
+		},
+		Transform = 
+		{
+			Vec3 Translation = [0, 0, 0],
+			Vec3 Scale = [1, 1, 1],
+			Quat Rotation = [-7.4505806e-009, 1.65436123e-024, -2.22044605e-016, 1],
+		},
+		Model = 
+		{
+			bool Visible = false,
+			bool VisibilityCulling = true,
+			bool VisibilityEvents = true,
+			bool CastShadows = true,
+			string MaterialName = "57e3650de03c4288:yeah",
+			string MeshName = "4de0354322b376ae:Sphere",
+			Vec4 Color = [1, 1, 1, 0.25],
+		},
+		RigidBody = 
+		{
+			bool Static = false,
+			bool Asleep = false,
+			bool Kinematic = false,
+			bool RotationLocked = false,
+			bool Mode2D = false,
+			bool AllowSleep = true,
+			bool Inherit2DMode = true,
+			Vec3 Velocity = [0, 0, 0],
+			Vec3 AngularVelocity = [0, 0, 0],
+		},
+		SphereCollider = 
+		{
+			bool Ghost = true,
+			bool SendsMessages = true,
+			bool Seamless = true,
+			string MaterialName = "4de020863e872da8:DefaultPhysicsMaterial",
+			string SerializedGroupName = "4e740859314e5515:DefaultGroup",
+			Vec3 Offset = [0, 0, 0],
+			float Radius = 1,
+		},
+		Orientation = 
+		{
+			Vec3 GlobalUp = [0, 1, 0],
+			Vec3 UpVector = [0, 1, 0],
+			Vec3 ForwardVector = [0, 0, 1],
+			OrientationBases DefaultBases = ForwardZUpY,
+		},
+		Hierarchy = 
+		{
+			Cog = 
+			{
+				LinkId = 
+				{
+					uint Id = 15,
+				},
+				Named = 
+				{
+					string Name = "SpawnZONE",
+				},
+				Transform = 
+				{
+					Vec3 Translation = [0, 0, -30],
+					Vec3 Scale = [1, 1, 1],
+					Quat Rotation = [7.4505806e-009, -1.65436123e-024, 2.22044605e-016, 1],
+				},
+				AsteroidSpawnController = 
+				{
+					float DefaultSpawnTime = 2,
+					float SpawnTimeVariance = 0.5,
+				},
+				Model = 
+				{
+					bool Visible = true,
+					bool VisibilityCulling = true,
+					bool VisibilityEvents = true,
+					bool CastShadows = true,
+					string MaterialName = "4de020863e85bb61:DefaultMaterial",
+					string MeshName = "4de0354322b345ae:Cube",
+					Vec4 Color = [1, 1, 1, 1],
+				},
+			},
+		},
+	},
+	Cog = 
+	{
+		LinkId = 
+		{
+			uint Id = 16,
 		},
 		Named = 
 		{
@@ -677,13 +821,19 @@ Level =
 		{
 			string Bullet = "5793c91d5b29a438:Bullet",
 		},
+		Health = 
+		{
+			int Health = 5,
+			int MaxHealth = 25,
+			bool DestroyAtZero = false,
+		},
 		Hierarchy = 
 		{
 			Cog = 
 			{
 				LinkId = 
 				{
-					uint Id = 14,
+					uint Id = 17,
 				},
 				Named = 
 				{
@@ -732,7 +882,7 @@ Level =
 			{
 				LinkId = 
 				{
-					uint Id = 15,
+					uint Id = 18,
 				},
 				Named = 
 				{
@@ -783,7 +933,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 16,
+			uint Id = 19,
 		},
 		Named = 
 		{
@@ -832,7 +982,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 17,
+			uint Id = 20,
 		},
 		Named = 
 		{
@@ -881,7 +1031,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 18,
+			uint Id = 21,
 		},
 		Named = 
 		{
@@ -930,7 +1080,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 19,
+			uint Id = 22,
 		},
 		Named = 
 		{
@@ -979,7 +1129,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 20,
+			uint Id = 23,
 		},
 		Named = 
 		{
@@ -1028,7 +1178,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 21,
+			uint Id = 24,
 		},
 		Named = 
 		{
@@ -1077,7 +1227,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 22,
+			uint Id = 25,
 		},
 		Named = 
 		{
@@ -1126,7 +1276,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 23,
+			uint Id = 26,
 		},
 		Named = 
 		{
@@ -1175,7 +1325,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 24,
+			uint Id = 27,
 		},
 		Named = 
 		{
@@ -1224,7 +1374,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 25,
+			uint Id = 28,
 		},
 		Named = 
 		{
@@ -1273,7 +1423,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 26,
+			uint Id = 29,
 		},
 		Named = 
 		{
@@ -1322,7 +1472,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 27,
+			uint Id = 30,
 		},
 		Named = 
 		{
@@ -1371,7 +1521,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 28,
+			uint Id = 31,
 		},
 		Named = 
 		{
@@ -1420,7 +1570,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 29,
+			uint Id = 32,
 		},
 		Named = 
 		{
@@ -1469,7 +1619,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 30,
+			uint Id = 33,
 		},
 		Named = 
 		{
@@ -1518,7 +1668,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 31,
+			uint Id = 34,
 		},
 		Named = 
 		{
@@ -1557,7 +1707,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 32,
+			uint Id = 35,
 		},
 		Named = 
 		{
@@ -1606,7 +1756,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 33,
+			uint Id = 36,
 		},
 		Named = 
 		{
@@ -1655,7 +1805,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 34,
+			uint Id = 37,
 		},
 		Named = 
 		{
@@ -1738,7 +1888,7 @@ Level =
 	{
 		LinkId = 
 		{
-			uint Id = 35,
+			uint Id = 38,
 		},
 		Named = 
 		{

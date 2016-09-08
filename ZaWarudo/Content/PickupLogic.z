@@ -12,10 +12,27 @@ class PickupLogic : ZilchComponent
   function OnCollisionStarted(event : CollisionEvent)
   {
     //Console.WriteLine("Collided");
+      // Checks if the object we're colliding with is the player / has player-specific components
     if (event.OtherObject.PlayerFireController != null)
     {
-      event.OtherObject.PlayerFireController.Camera.ZeroCameraController.SpeedStacks += 1;
+      var camera = event.OtherObject.PlayerFireController.Camera;
       
+        // Increases speed stacks, score, and amount stopped time
+      camera.ZeroCameraController.SpeedStacks += 1;
+      camera.ZeroCameraController.Score += 1;
+      
+      camera.ZeroCameraController.PlayerAmountOfStoppedTime += 1.0;
+      if (camera.ZeroCameraController.PlayerAmountOfStoppedTime > camera.ZeroCameraController.PlayersTotalStoppedTime)
+        camera.ZeroCameraController.PlayerAmountOfStoppedTime = camera.ZeroCameraController.PlayersTotalStoppedTime;
+        
+        // if the score is a multiple of 5, heal the player
+      if (camera.ZeroCameraController.Score % 5 == 0)
+      {
+        var ev = HealEvent();
+        ev.Amount = 1;
+        event.OtherObject.DispatchEvent("Heal", ev);
+      }
+    
       this.Owner.Destroy();
     }
   }
