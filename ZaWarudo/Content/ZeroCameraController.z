@@ -353,6 +353,7 @@ class ZeroCameraController : ZilchComponent
                 {
                     
                   this.Player.Transform.WorldTranslation += this.Player.Orientation.WorldRight * this.MovementSpeed * (this.SpeedStacks + 1);
+                  // Have the player go to 
                   if (this.DefaultCamOffset.X > -this.MaxDistance)
                   { 
                     this.DefaultCamOffset += Real3(this.MaxDistance/this.CamMoveSpeed,0,0)*this.Player.Orientation.WorldRight; 

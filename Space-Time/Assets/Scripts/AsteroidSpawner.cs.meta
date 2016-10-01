@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b7f86064dd8a8834a9888a58d52271e1
+timeCreated: 1475293521
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - SmallAsteroid: {fileID: 159964, guid: 2cdf2c41e2c0cee46bf0a017c04c92cb, type: 2}
+  - MediumAsteroid: {fileID: 160018, guid: d1e6da87bc77af941a133ce40e147500, type: 2}
+  - LargeAsteroid: {fileID: 157622, guid: ee7d1fec740de4f41a0cc9bf9930646c, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
