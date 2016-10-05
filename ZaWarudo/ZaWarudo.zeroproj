@@ -6,7 +6,7 @@ Cog =
 		string ProjectOwner = "",
 		string DefaultLevel = "Level",
 		string ProjectSpace = "Space",
-		string ProjectFolder = "C:\Users\Nera-Mor\Documents\GitHub\ZaWarudo\ZaWarudo",
+		string ProjectFolder = "D:\Desktop\Temporal GIT\ZaWarudo\ZaWarudo",
 		uint ProjectEngineRevision = 12624,
 		bool AutoTakeProjectScreenshot = true,
 	},
