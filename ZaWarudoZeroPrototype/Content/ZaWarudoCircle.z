@@ -1,0 +1,22 @@
+//this is just the bubble like particle that spawns when you stop time
+
+class ZaWarudoCircle : ZilchComponent
+{
+    function Initialize(init : CogInitializer)
+    {
+        Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+    }
+
+    function OnLogicUpdate(event : UpdateEvent)
+    {
+        var seq = Action.Sequence(this.Owner.Actions);
+        
+        Action.Property(seq, @this.Owner.Transform.Scale, Real3(15, 15, 15), 0.5, Ease.Linear);
+        Action.Call(seq, this.BitesTheDust);
+    }
+    
+    function BitesTheDust()
+    {
+        this.Owner.Destroy();
+    }
+}

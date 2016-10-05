@@ -1,0 +1,635 @@
+//OK SO to start we have a few super important things parented to each other n stuff
+//ok the RotationPivot object has the Mount Parented to it, and the Mount object has the Camera
+//parented to it.
+
+// RotationPivot -> Mount -> Camera
+
+//the RotationPivot object translates every frame so that it is always a fixed distance behind the Player object
+//and the Player object (while in normal time) constantly moves forward in its World Forward Direction.
+
+//because the Mount and Camera are parented to the RotationPivot, they move along with the player as well.
+
+/*
+DIRECTIONS/CONTROLS
+
+Right Click - Toggle Stopped Time. You can stay in stopped time a max of 7 seconds. You can toggle out of
+              stopped time early.
+              
+Left Click  - Move Forward during stopped time
+
+WASD        - Move about the Local XY plane while in normal time. Used to dodge asteroids in normal time.
+
+J           - Press this to simulate an enemy using time stop. Unless the player also enters stopped time, the player
+              Is "frozen" and unable to act. The enemy can stop time for up to 10 seconds, so the player must 
+              not enter stopped time too early otherwise the player will run out of Stopped time before the enemy does.
+              
+K           - Press this to end the Enemy Stopped Time early. 
+
+*/
+//camera old transform =   (0,3.0671, 4.09373)
+//       old rotation =    -17.2
+
+class ZeroCameraController : ZilchComponent
+{
+    //need a camera so we can see stuff 
+    [Dependency]
+    var Camera : Camera = null;
+    
+    var Bruh : Cog = null;
+    
+    //grab the objects in the level we need as Cogs because I'm putting
+    //everything on this one script instead of seperating it into
+    //components like I should because
+    //IM AN ADULT AND CAN DO WHAT I WANT JORDAN 
+    var Player : Cog = null;
+    var Mount : Cog = null;
+    var WorldFilter : Cog = null;
+    var RotationPivot : Cog = null;
+    var TimerText : Cog = null;
+    var EnemyWorldFilter : Cog = null;
+    var EnemyTimerText : Cog = null;
+    
+    
+    ///////////////////////////////////////////////////////////////
+    //this is some magic math stuff jordan came up with to make
+    //the camera correct during stopped time
+    var Phi : Real = Math.Pi * 0.5;
+    var Theta : Real = Math.Pi * 0.5;
+    var Target : Real3 = Real3();
+    
+    [Property]
+    var CameraRadius : Real = 5.0;
+    
+    
+    [Property]
+    var PlayerMaximumMoveDistance : Real = 10.0;
+    
+    //this is the player's maximum amount of time he has to spend in stopped time
+    [Property]
+    var PlayersTotalStoppedTime : Real = 7.0;
+    
+    //this is the enemy's maximum amount of time it can spend in stopped time
+    [Property]
+    var EnemysTotalStoppedTime : Real = 10.0;
+    //this changes forward movement speed while in normal time
+    [Property]
+    var MovementSpeed : Real = 0.04;
+    
+    
+    //speed modifier for normal time
+    [Property]
+    var SpeedStacks : Integer = 0;
+    
+    //Score that is tied to number of rifts collected
+    var Score : Integer = 0;
+    
+    // Keeps track of the exact offset the camera has from the default area;
+    var CameraRotation : Quaternion;
+    
+    //TESTING ZONE
+    var DefaultCamOffset : Real3 = Real3();
+    
+    // max distance from player to the edge of the screen in normal time
+    var MaxDistance : Real = 8.0;
+    
+    var CamMoveSpeed : Real = 100;
+    
+    
+    //
+    
+    
+    // Used to store mouse state so we can use it during logic update.
+    var LeftMouseDown : Boolean = false;
+    var RightMouseDown : Boolean = false;
+    //this is the change in mouse position stored as a 2D vector
+    var MouseDelta : Real2 = Real2(0.0, 0.0);
+    
+    //this is TRUE when time is normal, and FALS when the PLAYER has stopped time
+    var TimeIsFlowingNormally : Boolean = true;
+    
+    //used to indicate if an Enemy has stopped time, but the player may not have stopped time yet.
+    var EnemyHasStoppedTime : Boolean = false;
+    
+    //used to do something ONCE after switching from stopped to normal time
+    //specifically it's used for changing the forward facing of the player once
+    //since in Stopped Time the player's facing needs to change every frame, but
+    //the player's facing must lock in whatever is the current "forward" direction
+    //while time is normal
+    var DoThisOnceAfterSwitchingBackToNormalTime : Boolean = true;
+    
+    //counts how long we have spent in stopped time (seconds)
+    var PlayerAmountOfStoppedTime : Real = 10.0;
+    
+    //counts how long the enemy has spent in stopped time
+    var EnemyAmountOfStoppedTime : Real = 0.0;
+    
+    var ExpFollowPos : Real3 = Real3();
+    var EFollowTimer : Real = 0.0;
+    
+    
+    
+    function Initialize(init : CogInitializer)
+    {
+        
+        var viewport = this.Camera.Viewport;
+        
+        Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+        Zero.Connect(viewport, Events.MouseMove, this.OnMouseMove);
+        Zero.Connect(viewport, Events.RightMouseDown, this.OnRightMouseDown);
+        Zero.Connect(viewport, Events.RightMouseUp, this.OnRightMouseUp);
+        Zero.Connect(viewport, Events.MouseMove, this.OnMouseMove);
+        Zero.Connect(viewport, Events.LeftMouseDown, this.OnLeftMouseDown);
+        Zero.Connect(viewport, Events.LeftMouseUp, this.OnLeftMouseUp);
+        Zero.Connect(this.Space, "EnemyOutofTime", this.EnemyTimeResume);
+        
+        
+        //the player object
+        this.Player = this.Space.FindObjectByName("Player");
+        //the test object that the camera decides to follow
+        this.Bruh = this.Space.FindObjectByName("bruh");
+        //the yellow filter that makes the screen yellow if the player stopped time
+        this.WorldFilter = this.Space.FindObjectByName("WorldFilter");
+        //the purple filter that makes the screen purple if the enemy stops time
+        this.EnemyWorldFilter = this.Space.FindObjectByName("EnemyWorldFilter");
+        
+        //NOTE the two filters combine colors when both are active, to show that both the player AND the enemy are in the time stopped
+        //state, we can probably expand on this feedback
+        
+        //the rotation pivot transform. This is a bundle of heirarchies that contain the camera and anything parented to the 
+        //camera. It stays in place relative to the player due to its worldtranslation being set to the player's world translation
+        // every frame in onlogicupdate. This effectively "parented" it to the player without actually adding to the player's
+        //heirarchy, which is what we needed because both the player and the RotationPivot need to maintain their
+        //own individual Local directions, which would not happen if the pivot was parented to the player.
+        this.RotationPivot = this.Space.FindObjectByName("RotationPivot");
+        
+        //the bottom text that is the player's amount of stopped time
+        this.TimerText = this.Space.FindObjectByName("Timer");
+        //the top text that is the enemy's amount of stopped time
+        this.EnemyTimerText = this.Space.FindObjectByName("EnemyTimer");
+
+        //initialize this to false so we only see it when time is stopped
+        this.WorldFilter.Sprite.Visible = false;
+        
+        
+        
+        this.CameraRotation = this.Owner.Transform.LocalRotation;
+    }
+
+
+    
+////////////////////////////////////
+
+//RIGHT MOUSE STUFF
+//The following two functions are just to keep track of if the right mouse is down or not
+//some other stuff happens when the right mouse is down, probably should
+//port that over to a different function but what are ya gonna do
+
+////////////////////////////////////
+    function OnRightMouseDown(viewportMouseEvent : ViewportMouseEvent)
+    {
+        this.RightMouseDown = true;
+        Console.WriteLine("right mouse is done");
+        
+        if(this.TimeIsFlowingNormally == true)
+        {
+            this.TimeIsFlowingNormally = false;
+            this.WorldFilter.Sprite.Visible = true;
+            var hinjaku = new DioShout();
+            this.GameSession.DispatchEvent("THE WORLD", hinjaku);
+            this.DefaultCamOffset = Real3();
+            this.Space.CreateAtPosition(Archetype.Find("ZaWarudoCircle"), this.Player.Transform.WorldTranslation);
+        }
+        
+        else if(this.TimeIsFlowingNormally == false)
+        {
+            this.TimeIsFlowingNormally = true;
+            this.WorldFilter.Sprite.Visible = false;
+            //move the test object onto the player
+            this.Bruh.Transform.Translation = this.Player.Transform.Translation;
+            ////PROBABLY DOESN'T ACTUALLY WORK
+            this.Owner.Transform.LocalRotation = this.CameraRotation;
+        }
+        
+    }
+
+    function OnRightMouseUp(viewportMouseEvent : ViewportMouseEvent)
+    {
+        this.RightMouseDown = false;
+        Console.WriteLine("RightMouse is up");
+    }
+
+////////////////////////////////////
+
+//LEFT MOUSE STUFF - This just checks and updates if the left mouse is down
+//gotto keep track of the boolean which other stuff checks for to determine left mouse down or not
+
+///////////////////////////////////
+    function OnLeftMouseDown(viewportMouseEvent : ViewportMouseEvent)
+    {
+        this.LeftMouseDown = true;
+       // Console.WriteLine("Left mouse is donw");
+    }
+    
+    function OnLeftMouseUp(viewportMouseEvent : ViewportMouseEvent)
+    {
+        this.LeftMouseDown = false;
+        //Console.WriteLine("LeftMouse is uppppp");
+    }
+
+//////////////////////////////////////
+// TRACK MOUSE DELTA (change in mouse position) for use
+// in camera logic
+/////////////////////////////////////
+    function OnMouseMove(viewportMouseEvent : ViewportMouseEvent)
+    {
+        //this function of viewport MouseEvent just gives a 2D vector of how much
+        //the mouse has moved compared to the past frame
+        var delt = viewportMouseEvent.Movement;
+
+        this.MouseDelta = delt;
+        //viewportMouseEvent.Position
+        //Console.WriteLine(this.MouseDelta);
+    }
+    
+//////////////////////////////////////////
+// UPDATE EVERY FRAME! WHOO 
+////////////////////////////////////////////
+    function OnLogicUpdate(event : UpdateEvent)
+    {
+        //Press J to simulate the enemy stopping time and forcing the
+        //player to stop moving unless the player also enters stopped time
+        //this will eventually be replaced with some sort of AI logic, but for testing press the button
+        if(Zero.Keyboard.KeyIsPressed(Keys.J))
+        {
+            //play the sound effect of the player saying "what! impossible!"
+            var konnoDioGa = new Bakana();
+            this.GameSession.DispatchEvent("Bakana!", konnoDioGa);
+            this.EnemyHasStoppedTime = true;
+        }
+        
+        //test for enemy turning off their time in stopped time
+        if(Zero.Keyboard.KeyIsDown(Keys.K))
+        {
+            this.EnemyHasStoppedTime = false;
+        }
+        
+        //checks if the enemy has entered stoped time, causing the player to be frozen if the player is still
+        //in normal time. A purple filter is overlayed to show that an enemy has done this. 
+        if(this.EnemyHasStoppedTime == true)
+        {
+            //display purple filter so player knows that the enemy stopped time
+            this.EnemyWorldFilter.Sprite.Visible = true;
+            this.EnemyAmountOfStoppedTime += event.Dt;
+            
+            //display the enemy's time stop duration
+            var roundedenemytime = Math.Ceil(this.EnemyAmountOfStoppedTime, -2);
+            this.EnemyTimerText.SpriteText.Text = "`roundedenemytime`";
+            
+            var rand1 = new Random();
+
+            //if the enemy stops time and the player has not entered stopped time, they are "struggling" so 
+            //I added this shaking effect as a form of visual feedback, letting the player know that
+            //they must enter stopped time themselves in order to fight back against the enemy stopped time
+            if(this.TimeIsFlowingNormally == true)
+            {
+                this.Owner.Transform.WorldTranslation += 
+                Real3(rand1.Range(-0.03, 0.03), rand1.Range(-0.03, 0.03), rand1.Range(-0.03, 0.03));
+            }
+            
+            //10 seconds is the maximum amount of time the enemy can stop time, for now
+            if(this.EnemyAmountOfStoppedTime >= this.EnemysTotalStoppedTime)
+            {
+                this.EnemyHasStoppedTime = false;
+            }
+        }
+        
+        //if the enemy uses up their 10 seconds of stopped time or you press K to end enemy stopped
+        //time early, do these things.
+        if(this.EnemyHasStoppedTime == false)
+        {
+            this.EnemyWorldFilter.Sprite.Visible = false;
+            this.EnemyAmountOfStoppedTime = 0.0;
+            this.EnemyTimerText.SpriteText.Text = "Enemy's Stopped Time";
+        }
+        
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// TIME NORMAL  // this stuff happens if time is flowing normally
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        if(this.TimeIsFlowingNormally == true && this.EnemyHasStoppedTime == false)
+        {
+            //while normal time is flowing, the player always moves in
+            //the it's Forward Direction
+            this.Bruh.Transform.WorldTranslation += this.Player.Orientation.WorldForward * -this.MovementSpeed * (this.SpeedStacks + 1);
+            this.Player.Transform.WorldTranslation += this.Player.Orientation.WorldForward * -this.MovementSpeed * (this.SpeedStacks + 1);
+            
+            //this stuff only happens Once whenever we start/switch back to normal time
+            if(this.DoThisOnceAfterSwitchingBackToNormalTime == true)
+            {
+                //change the Player's Direction so that his new "Forward" is set based on where
+                //the Camera is facing
+                this.Bruh.Transform.WorldRotation = this.Owner.Transform.WorldRotation;
+                this.Player.Transform.WorldRotation = this.Owner.Transform.WorldRotation;
+               
+                //this is just so that we only set the player's new forward direction once
+                this.DoThisOnceAfterSwitchingBackToNormalTime = false;
+            }
+            
+            ///////////////////////
+            // Player XY plane movement while in normal time. The player's forward direction
+            // cannot be changed during normal time
+            // Player should use this to dodge asteroids, and the movement distance *should* scale
+            // depending on how fast the player is going. The faster they are the less they
+            // can maneuver in the XY plane during normal time, as to promote more usage of
+            // stopped time.
+            /////////////////////
+        
+/////////////////////// This is the stuff I'm changing JY_CHANGE //////////////////////
+            if(Zero.Keyboard.KeyIsDown(Keys.A))
+            {
+                if (this.Calc3DDistance(this.Player.Transform.WorldTranslation + this.Player.Orientation.WorldRight * this.MovementSpeed * (this.SpeedStacks + 1),this.Bruh.Transform.WorldTranslation)
+                    <= this.MaxDistance)
+                {
+                    
+                  this.Player.Transform.WorldTranslation += this.Player.Orientation.WorldRight * this.MovementSpeed * (this.SpeedStacks + 1);
+                  // Have the player go to 
+                  if (this.DefaultCamOffset.X > -this.MaxDistance)
+                  { 
+                    this.DefaultCamOffset += Real3(this.MaxDistance/this.CamMoveSpeed,0,0)*this.Player.Orientation.WorldRight; 
+                    this.Owner.Orientation.LookAtPoint(this.Bruh.Transform.Translation + this.DefaultCamOffset);
+                    
+                  }
+                }
+                //this.Owner.Orientation.LookAtPoint(this.Player.Transform.WorldTranslation);
+            }
+            else if(Zero.Keyboard.KeyIsDown(Keys.D))
+            {
+              if (this.Calc3DDistance(this.Player.Transform.WorldTranslation - this.Player.Orientation.WorldRight * this.MovementSpeed * (this.SpeedStacks + 1),this.Bruh.Transform.WorldTranslation)
+                    <= this.MaxDistance)
+              {
+                
+                this.Player.Transform.WorldTranslation += -this.Player.Orientation.WorldRight * this.MovementSpeed * (this.SpeedStacks + 1);
+                if (this.DefaultCamOffset.X < this.MaxDistance)
+                { 
+                  this.DefaultCamOffset += Real3(this.MaxDistance/this.CamMoveSpeed,0,0)*-this.Player.Orientation.WorldRight; 
+                  this.Owner.Orientation.LookAtPoint(this.Bruh.Transform.Translation + this.DefaultCamOffset);
+                  
+                }
+              }
+                //this.Owner.Orientation.LookAtPoint(this.Player.Transform.WorldTranslation);
+            }
+            
+            if(Zero.Keyboard.KeyIsDown(Keys.W))
+            {
+              if (this.Calc3DDistance(this.Player.Transform.WorldTranslation + this.Player.Orientation.WorldUp * this.MovementSpeed * (this.SpeedStacks + 1),this.Bruh.Transform.WorldTranslation)
+                    <= this.MaxDistance)
+              {     
+              
+                if (this.DefaultCamOffset.Y < this.MaxDistance)
+                { 
+                  this.DefaultCamOffset += Real3(0,this.MaxDistance/this.CamMoveSpeed,0)*this.Player.Orientation.WorldUp; 
+                  this.Owner.Orientation.LookAtPoint(this.Bruh.Transform.Translation + this.DefaultCamOffset);
+                  
+                }
+                this.Player.Transform.WorldTranslation += this.Player.Orientation.WorldUp * this.MovementSpeed * (this.SpeedStacks + 1);
+              }
+                //this.Owner.Orientation.LookAtPoint(this.Player.Transform.WorldTranslation);
+            }
+            else if(Zero.Keyboard.KeyIsDown(Keys.S))
+            {
+              if (this.Calc3DDistance(this.Player.Transform.WorldTranslation - this.Player.Orientation.WorldUp * this.MovementSpeed * (this.SpeedStacks + 1),this.Bruh.Transform.WorldTranslation)
+                    <= this.MaxDistance)
+              {
+              
+                if (this.DefaultCamOffset.Y > -this.MaxDistance)
+                { 
+                  this.DefaultCamOffset += Real3(0,this.MaxDistance/this.CamMoveSpeed,0)*-this.Player.Orientation.WorldUp; 
+                  this.Owner.Orientation.LookAtPoint(this.Bruh.Transform.Translation + this.DefaultCamOffset);
+                  
+                }
+                this.Player.Transform.WorldTranslation += -this.Player.Orientation.WorldUp * this.MovementSpeed * (this.SpeedStacks + 1);
+              }
+                //this.Owner.Orientation.LookAtPoint(this.Player.Transform.WorldTranslation);
+            }
+            else if (!Zero.Keyboard.KeyIsDown(Keys.A) && !Zero.Keyboard.KeyIsDown(Keys.D)
+                  && !Zero.Keyboard.KeyIsDown(Keys.W) && !Zero.Keyboard.KeyIsDown(Keys.S))
+            {
+              //if above orb, move done, and so on and so forth
+              if (this.DefaultCamOffset.X > this.MaxDistance/30.0)
+              {
+                this.DefaultCamOffset -= Real3(this.MaxDistance/this.CamMoveSpeed,0,0);
+                //this.Player.Transform.WorldTranslation += this.Player.Orientation.WorldRight * 0.1;
+              }
+              else if (this.DefaultCamOffset.X < -this.MaxDistance/30.0)
+              {
+                this.DefaultCamOffset += Real3(this.MaxDistance/this.CamMoveSpeed,0,0);
+                //this.Player.Transform.WorldTranslation += -this.Player.Orientation.WorldRight * 0.1;
+              }
+              
+              if (this.DefaultCamOffset.Y > this.MaxDistance/30.0)
+              {
+                this.DefaultCamOffset -= Real3(0,this.MaxDistance/this.CamMoveSpeed,0);
+                //this.Player.Transform.WorldTranslation += -this.Player.Orientation.WorldUp * 0.1;
+              }
+              else if (this.DefaultCamOffset.Y < -this.MaxDistance/30.0)
+              {
+                this.DefaultCamOffset += Real3(0,this.MaxDistance/this.CamMoveSpeed,0);
+                //this.Player.Transform.WorldTranslation += this.Player.Orientation.WorldUp * 0.1;
+              }
+              
+              this.Owner.Orientation.LookAtPoint(this.Bruh.Transform.Translation + this.DefaultCamOffset);
+              
+              if (this.Player.Transform.WorldTranslation.X > this.Bruh.Transform.WorldTranslation.X
+                 && this.Player.Transform.WorldTranslation.X - this.Bruh.Transform.WorldTranslation.X > 0.1)
+              {
+                this.Player.Transform.WorldTranslation +=  Real3(-0.1,0,0);
+              }
+              else if (this.Player.Transform.WorldTranslation.X < this.Bruh.Transform.WorldTranslation.X
+                      && this.Bruh.Transform.WorldTranslation.X - this.Player.Transform.WorldTranslation.X > 0.1)
+              {
+                this.Player.Transform.WorldTranslation += Real3(0.1,0,0);
+              }
+              
+              if (this.Player.Transform.WorldTranslation.Y > this.Bruh.Transform.WorldTranslation.Y
+                  && this.Player.Transform.WorldTranslation.Y - this.Bruh.Transform.WorldTranslation.Y > 0.1)
+              {
+                this.Player.Transform.WorldTranslation += Real3(0,-0.1,0);
+              }
+              else if (this.Player.Transform.WorldTranslation.Y < this.Bruh.Transform.WorldTranslation.Y
+                      && this.Bruh.Transform.WorldTranslation.Y - this.Player.Transform.WorldTranslation.Y > 0.1)
+              {
+                this.Player.Transform.WorldTranslation += Real3(0,0.1,0);
+              }
+              
+              if (this.Player.Transform.WorldTranslation.Z > this.Bruh.Transform.WorldTranslation.Z
+                  && this.Player.Transform.WorldTranslation.Z - this.Bruh.Transform.WorldTranslation.Z > 0.1)
+              {
+                this.Player.Transform.WorldTranslation += Real3(0,0, -0.1);
+              }
+              else if (this.Player.Transform.WorldTranslation.Z < this.Bruh.Transform.WorldTranslation.Z
+                      && this.Bruh.Transform.WorldTranslation.Z - this.Player.Transform.WorldTranslation.Z > 0.1)
+              {
+                this.Player.Transform.WorldTranslation += Real3(0,0, 0.1);
+              }
+              
+              //this.Owner.Orientation.LookAtPoint(this.Bruh.Transform.WorldTranslation);
+            }
+            // Camera has to face a bit in the direction the player is moving in
+            /////////////////////////
+            //Console.WriteLine(this.DefaultCamOffset);
+        }
+        
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// TIME STOPPED  // EVERYTHING IN THIS SECTION HAPPENS WHILE TIME IS STOPPED
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //this just checks if time is currently stopped or not
+        if((this.TimeIsFlowingNormally == false))
+        {
+            //this is just resetting the boolean for later use once time is back to normal
+            this.DoThisOnceAfterSwitchingBackToNormalTime = true;
+            
+            this.Phi -= this.MouseDelta.Y * 0.01;
+                // Clamp the pole angle so that we don't flip the camera upside-down
+                this.Phi = Math.Clamp(this.Phi, 0.01, Math.Pi - 0.01);
+                this.Theta += this.MouseDelta.X * 0.01;
+            
+            if(this.LeftMouseDown == true)
+            {
+                // clicking left mouse while time is stopped propels the player
+                //forward in the current direction of the camera
+                // this is how we will change the "forward" direction 
+                
+                //change rotation to match the camera's world rotation 
+                this.Player.Transform.WorldRotation = this.Owner.Transform.WorldRotation;
+                this.Bruh.Transform.WorldRotation = this.Owner.Transform.WorldRotation;
+                
+                //move the player forward ** this is negative because the player's forward is actually 
+                // backwards because the Zero Orientation thing is wierd
+                this.Bruh.Transform.WorldTranslation += this.Player.Orientation.WorldForward * -this.MovementSpeed;
+                this.Player.Transform.WorldTranslation += this.Player.Orientation.WorldForward * -this.MovementSpeed;
+            }
+        }
+        
+        //tims is still stopped, but i don't care about mouse being down for this stuff
+        if(this.TimeIsFlowingNormally == false)
+        {
+            //count how long we have been in stopped time
+            this.PlayerAmountOfStoppedTime -= event.Dt;
+            
+            //Console.WriteLine(this.PlayerAmountOfStoppedTime);
+            if(this.PlayerAmountOfStoppedTime <= 0) //why isn't this a property
+            {
+                //we have used up our 7 seconds of stopped time!
+                //go back to normal time
+                this.TimeIsFlowingNormally = true;
+                this.WorldFilter.Sprite.Visible = false;
+                //make sure to reset our stopped time counter
+                this.PlayerAmountOfStoppedTime = 10.0;
+            }
+            
+            //UI to show how long we have been in stopped time. Set to a sprite just 
+            //kinda hanging out for now but yeah
+            var rounded = Math.Ceil(this.PlayerAmountOfStoppedTime, -2);
+            this.TimerText.SpriteText.Text = "`rounded`";
+        }
+        
+        //reset the player timer sprite text when in normal time
+        if(this.TimeIsFlowingNormally == true)
+        {
+            if (this.PlayerAmountOfStoppedTime <= 0.0)
+                this.PlayerAmountOfStoppedTime = 10.0;
+            this.TimerText.SpriteText.Text = "Player's Stopped Time";
+        }
+        
+        /////////////////////////////////
+        //THIS STUFF ALWAYS HAPPENS FOR REASONS
+        /////////////////////////////////
+        
+        // this variable CameraDir is used to calculate the "forward" direction for the player
+        if (this.TimeIsFlowingNormally == false)
+        {
+            var cameraDir = Real3();
+            cameraDir.X = this.CameraRadius * Math.Cos(this.Theta) * Math.Sin(this.Phi);
+            cameraDir.Y = this.CameraRadius * Math.Cos(this.Phi);
+            cameraDir.Z = this.CameraRadius * Math.Sin(this.Theta) * Math.Sin(this.Phi);
+            
+            // Since the camera is always looking at the player, the forward vector is just the
+            // opposite of our position vector on the unit sphere
+            
+            
+            var forward = -cameraDir;
+            
+
+            forward = Math.Normalize(forward);
+            
+            //var movementForward = forward;
+            //var movementRight = Real3(-forward.Z, 0.0, forward.X);
+            
+            // Build up the total world space movement of the camera
+            var movementW = Real3();
+            
+             // Compute the basis of the camera
+            var up = Real3(0.0, 1.0, 0.0);
+            // Use the world up and camera's forward to get the right vector
+            var right = Math.Cross(forward, up);
+            right = Math.Normalize(right);
+            // Now use the camera forward and right to get the camera's actual up vector
+            up = Math.Cross(right, forward);
+            up = Math.Normalize(up);
+            
+            // how far zoomed out we are (so we move faster when we're more zoomed out)
+            var moveSensitivity = 2.0 + 0.1 * this.CameraRadius;
+            // When translating, we move our target position (which implicitly moves our position)
+            this.Target += movementW * event.Dt * moveSensitivity;
+            // Set our position to be focused on our target, but back along our
+            // view vector based upon the sphere's current radius
+            var transform = this.RotationPivot.Transform;
+            
+            transform.Translation = this.Target + cameraDir;
+            
+            // Set the rotation bases for our camera
+            transform.SetRotationBases(forward, up, right);
+        
+        }
+        //RotationPivot is just a transform that always needs to be exactly where the player is
+        //in order for our parenting/rigging heirarchy thing to work
+        //so every frame I just keep the RotationPivot transform object where the player is.
+        if (this.EFollowTimer > 0.0)
+        {
+          Console.WriteLine("EFollow");
+          this.EFollowTimer -= event.Dt;
+          //this.RotationPivot.Transform.WorldTranslation = this.ExpFollowPos;
+        }
+        else
+        {
+          //could probably just make rotation pivot follow bruh
+          if (this.TimeIsFlowingNormally == true)
+          {
+            this.RotationPivot.Transform.WorldTranslation = this.Bruh.Transform.WorldTranslation;
+          }
+          else
+            this.RotationPivot.Transform.WorldTranslation = this.Player.Transform.WorldTranslation;
+          
+        }
+        // Make sure to clear out the translational delta of the mouse used in MouseMovement
+        //this needs to reset every frame otherwise the "change in position since last frame"
+        //that the Delta is tracking won't mean anything.
+        this.MouseDelta = Real2(0.0, 0.0);
+    }
+    
+    function EnemyTimeResume(event : IAmOutOfTime)
+    {
+        this.ExpFollowPos = event.Pos;
+        this.EFollowTimer = event.TimeToFollow;
+        Console.WriteLine("bruh");
+    }
+    
+    function Calc3DDistance(d1 : Real3, d2 : Real3) : Real
+    {
+      return Math.Sqrt((d2.X - d1.X)*(d2.X - d1.X) + (d2.Y - d1.Y)*(d2.Y - d1.Y) + (d2.Z - d1.Z)*(d2.Z - d1.Z));
+      
+    }
+}
