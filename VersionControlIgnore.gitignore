@@ -8,6 +8,10 @@
 sysinfo.txt
 *.stackdump
  
+/winsonbranch.txt
+/jordanbranch.txt
+/kailabranch.txt
+
 # ============================================= #
 # Visual Studio / MonoDevelop / Rider generated #
 # ============================================= #
