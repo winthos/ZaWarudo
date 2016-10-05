@@ -1,0 +1,87 @@
+// This is for the enemy spawner. Yes.
+class EnemySpawner : ZilchComponent
+{
+      // The base interval between individual spawns of a wave
+    [Property]
+    var IndividualSpawnInterval : Real = 0.0;
+    
+      // Variation in the interval of spawning
+    [Property]
+    var IndividualSpawnVariation : Real = 0.0;
+    
+      // The base interval between wave spawns
+    [Property]
+    var GroupSpawnInterval : Real = 0.0;
+    
+      // Variation in the interval of spawning
+    [Property]
+    var GroupSpawnVariation : Real = 0.0;
+      
+    var Timer : Real = 0.0;
+    var GrpTimer : Real = 0.0;
+    
+    var NextSpawn : Real = 0.0;
+    
+    [Property]
+    var SpawnsPerGroup : Integer = 4;
+    var SpawnCount : Integer;
+    
+    var SpawnPositions : Array[Real3] = Array[Real3]();
+    
+    var Player : Cog = null;
+    var Camera : Cog = null;
+    
+    function Initialize(init : CogInitializer)
+    {
+        Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+        this.Player = this.Space.FindObjectByName("Player");
+        this.Camera = this.Space.FindObjectByName("Camera");
+        this.SpawnPositions.Add(Real3(0,0,15));
+        this.SpawnPositions.Add(Real3(0,0,-15));
+        this.SpawnPositions.Add(Real3(15,0,0));
+        this.SpawnPositions.Add(Real3(-15,0,0));
+        this.SpawnPositions.Add(Real3(10,0,10));
+        this.SpawnPositions.Add(Real3(-10,0,10));
+        this.SpawnPositions.Add(Real3(10,0,-10));
+        this.SpawnPositions.Add(Real3(-10,0,-10));
+        this.SpawnPositions.Add(Real3(13,0,6));
+        this.SpawnPositions.Add(Real3(-13,0,6));
+        this.SpawnPositions.Add(Real3(13,0,-6));
+        this.SpawnPositions.Add(Real3(-13,0,-6));
+        this.SpawnPositions.Add(Real3(6,0,13));
+        this.SpawnPositions.Add(Real3(-6,0,13));
+        this.SpawnPositions.Add(Real3(6,0,-13));
+        this.SpawnPositions.Add(Real3(-6,0,-13));
+        //0 - 15
+        var rng = Random();
+        this.NextSpawn = this.IndividualSpawnInterval + rng.Range(-this.IndividualSpawnVariation, this.IndividualSpawnVariation);
+    }
+
+    function OnLogicUpdate(event : UpdateEvent)
+    {
+      
+      if (this.Timer < this.NextSpawn && this.SpawnCount < this.SpawnsPerGroup)
+      {
+        this.Timer += event.Dt;
+        if (this.Timer >= this.NextSpawn)
+        {
+          this.SpawnEnemy();
+          this.Timer = 0.0;
+        }
+      }
+      
+    }
+    
+    
+    function SpawnEnemy()
+    {
+      var rng = Random();
+      
+      var pos = this.Player.Transform.Translation + this.SpawnPositions[rng.RangeInclusiveMax(0,15)];
+      var en = this.Space.CreateAtPosition(Archetype.Find("TimeBomb"), pos);
+      this.SpawnCount += 1;
+      this.NextSpawn = this.IndividualSpawnInterval + rng.Range(-this.IndividualSpawnVariation, this.IndividualSpawnVariation);
+      //if (this.SpawnCount >= this.SpawnsPerGroup)
+        //this.SpawnCount = 0;
+    }
+}

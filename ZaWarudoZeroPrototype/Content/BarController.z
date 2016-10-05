@@ -1,0 +1,36 @@
+class BarController : ZilchComponent
+{
+  var Camera : Cog = null;
+  
+  var COwner : Cog = null;
+  
+  [Property]
+  var Who : Integer = 1; // 0 = player 1 = enemy 
+  
+  function Initialize(init : CogInitializer)
+  {
+    this.Camera = this.Space.FindObjectByName("Camera");
+    Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+    if (this.Owner.Parent != null)
+    {
+      this.COwner = this.Owner.Parent;
+      if (this.Owner.Parent.PlayerFireController !=  null || this.Owner.Parent.Name == "Camera")
+        this.Who = 0;
+    }
+    else
+      this.Owner.Destroy();
+    
+  }
+
+  function OnLogicUpdate(event : UpdateEvent)
+  {
+    if (this.Who == 1)
+    {
+      this.Owner.Orientation.LookAtPoint(this.Camera.Transform.WorldTranslation);
+
+      this.Owner.Area.Size = Real2(this.COwner.EnemyController.AmountStoppedTime / 10.0, 1);
+    }
+    else
+      this.Owner.Area.Size = Real2(this.Camera.ZeroCameraController.PlayerAmountOfStoppedTime / this.Camera.ZeroCameraController.PlayersTotalStoppedTime, 1);
+  }
+}

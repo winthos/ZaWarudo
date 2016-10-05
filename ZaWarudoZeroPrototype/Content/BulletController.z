@@ -1,0 +1,38 @@
+class BulletController : ZilchComponent
+{
+  var Player : Cog = null;
+  [Property]
+  var MaxDistance : Real = 800.0;
+  function Initialize(init : CogInitializer)
+  {
+    Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+    Zero.Connect(this.Owner, Events.CollisionStarted, this.OnCollisionStarted);
+    this.Player = this.Space.FindObjectByName("Player");
+  }
+
+  function OnCollisionStarted(event : CollisionEvent)
+  {
+    if (event.OtherObject.EnemyController != null)
+    {
+      event.OtherObject.EnemyController.Health -= 1;
+      if (event.OtherObject.EnemyController.Health <= 0)
+      {
+        event.OtherObject.EnemyController.Kaboom();
+      }
+      this.Owner.Destroy();
+    }
+    else if (event.OtherObject.AsteroidController != null)
+    {
+      event.OtherObject.AsteroidController.TakeDamage(1);
+      this.Owner.Destroy();
+    }
+  }
+
+  function OnLogicUpdate(event : UpdateEvent)
+  {
+    if (Math.Distance(this.Owner.Transform.Translation, this.Player.Transform.Translation) > this.MaxDistance)
+    {
+      this.Owner.Destroy();
+    }
+  }
+}

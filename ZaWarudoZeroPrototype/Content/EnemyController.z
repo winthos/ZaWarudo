@@ -1,0 +1,81 @@
+
+  // Message enemies send when they are out of time
+class IAmOutOfTime : ZilchEvent
+{
+    var Pos : Real3;
+    var TimeToFollow : Real;
+}
+
+
+class EnemyController : ZilchComponent
+{
+      // The rate at which the enemy moves toward the player
+    [Property]
+    var MovementSpeed : Real = 0.0;
+    
+      // Counter for 
+    [Property]
+    var AmountStoppedTime : Real = 10.0;
+    
+
+    var Player : Cog = null;
+    var Camera : Cog = null;
+    
+    var Active : Boolean = true;
+    
+    [Property]
+    var Health : Integer = 15;
+    
+    
+    function Initialize(init : CogInitializer)
+    {
+        Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+        Zero.Connect(this.Owner, Events.CollisionStarted, this.OnCollisionStarted);
+        this.Player = this.Space.FindObjectByName("Player");
+        this.Camera = this.Space.FindObjectByName("Camera");
+        this.Camera.ZeroCameraController.EnemyHasStoppedTime = true;
+    }
+
+    function OnCollisionStarted(event : CollisionEvent)
+    {
+      
+        this.Kaboom();
+    }
+
+    function OnLogicUpdate(event : UpdateEvent)
+    {
+        if (!this.Active)
+            return;
+            
+        if (this.AmountStoppedTime >= 0 || this.Camera.ZeroCameraController.EnemyHasStoppedTime)
+        {
+            this.AmountStoppedTime -= event.Dt;
+            var movementVector = Real3();
+            movementVector = Math.Normalize(this.Player.Transform.WorldTranslation - this.Owner.Transform.WorldTranslation) * this.MovementSpeed;
+            //Console.WriteLine(movementVector);
+            this.Owner.Transform.Translation += movementVector;
+            
+        }
+        if (this.AmountStoppedTime <= 0.0)
+        {
+            this.Active = false;
+            var ev = IAmOutOfTime();
+            ev.Pos = this.Owner.Transform.WorldTranslation;
+            ev.TimeToFollow = 3.0;
+            this.Space.DispatchEvent("EnemyOutofTime", ev);
+            this.Kaboom();
+            Console.WriteLine("Dispatched `ev`");
+            //destruction / explosion action?
+        }
+    }
+    
+    function Kaboom()
+    {
+      var explode = this.Space.CreateAtPosition(Archetype.Find("ExplosionParticle"), this.Owner.Transform.Translation);
+      var seq = Actions.Sequence(this.Owner.Actions);
+      Actions.Property(seq, @this.Owner.Model.Visible, false, 0.1, Ease.Linear);
+      Actions.Delay(seq, 2.0);
+      Actions.Call(seq, this.Owner.Destroy);
+      
+    }
+}

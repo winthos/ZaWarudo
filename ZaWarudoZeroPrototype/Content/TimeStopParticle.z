@@ -1,0 +1,27 @@
+//this contains the visibility logic for the glowy green particle that appears on the player
+//when time is stopped
+class TimeStopParticle : ZilchComponent
+{
+    var Player : Cog = null;
+    var Camera : Cog = null;
+    
+    function Initialize(init : CogInitializer)
+    {
+        Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+        this.Camera = this.Space.FindObjectByName("Camera");
+        this.Player = this.Space.FindObjectByName("Player");
+    }
+
+    function OnLogicUpdate(event : UpdateEvent)
+    {
+        this.Owner.Transform.WorldTranslation = this.Player.Transform.WorldTranslation;
+        if(this.Camera.ZeroCameraController.TimeIsFlowingNormally == false)
+        {
+            this.Owner.SpriteParticleSystem.Visible = true;
+        }
+        else
+        {
+            this.Owner.SpriteParticleSystem.Visible = false;
+        }
+    }
+}

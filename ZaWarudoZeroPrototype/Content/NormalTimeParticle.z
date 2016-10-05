@@ -1,0 +1,26 @@
+//this contains visibility logic for when the purple start particles appear in normal time
+class NormalTimeParticle : ZilchComponent
+{
+    var Player : Cog = null;
+    var Camera : Cog = null;
+    
+    function Initialize(init : CogInitializer)
+    {
+        Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+        this.Player = this.Space.FindObjectByName("Player");
+        this.Camera = this.Space.FindObjectByName("Camera");
+    }
+
+    function OnLogicUpdate(event : UpdateEvent)
+    {
+        this.Owner.Transform.WorldTranslation = this.Player.Transform.WorldTranslation;
+        if(this.Camera.ZeroCameraController.TimeIsFlowingNormally == false)
+        {
+            this.Owner.SpriteParticleSystem.Visible = false;
+        }
+        else
+        {
+            this.Owner.SpriteParticleSystem.Visible = true;
+        }
+    }
+}

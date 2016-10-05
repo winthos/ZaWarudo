@@ -1,0 +1,8 @@
+TextContent = 
+{
+	ZilchScriptBuilder = 
+	{
+		string Name = "BarController",
+		uint64 ResourceId = 5781d15e55991a93,
+	},
+},

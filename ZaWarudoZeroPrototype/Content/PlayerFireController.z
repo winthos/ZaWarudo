@@ -1,0 +1,56 @@
+class PlayerFireController : ZilchComponent
+{
+  [Property]
+  var Bullet : Archetype = null;
+  
+  
+  var Camera : Cog = null;
+  
+  var RayStartPos : Real3 = Real3();
+  
+  function Initialize(init : CogInitializer)
+  {
+    Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+    this.Camera = this.Space.FindObjectByName("Camera");
+    this.RayStartPos = this.Owner.FindChildByName("PlayerRay").Transform.Translation;
+    
+  }
+
+  function OnLogicUpdate(event : UpdateEvent)
+  {
+    //Console.WriteLine(this.Owner.Orientation.WorldForward);
+    if (Zero.Keyboard.KeyIsDown(Keys.Space))
+    {
+      var bullet = this.Space.CreateAtPosition(this.Bullet, this.Owner.Transform.Translation + -this.Owner.Orientation.WorldForward);
+      bullet.RigidBody.ApplyLinearVelocity(-this.Owner.Orientation.WorldForward * 153);
+    }
+    this.RayCast();
+  }
+  
+  function RayCast()
+  {
+    var seq = Actions.Sequence(this.Owner.Actions);
+    var ray = Ray();
+    var filter = CastFilter();
+    filter.CollisionGroup = CollisionGroup.Brah;
+    filter.IgnoreGhost = true;
+    var pray = this.Owner.FindChildByName("PlayerRay");
+    ray.Start = pray.Transform.WorldTranslation;
+    ray.Direction = Math.Normalize(-this.Owner.Orientation.WorldForward);
+    //Console.WriteLine(ray.Direction);
+    
+    var castResult = this.Space.PhysicsSpace.CastRayFirstFiltered(ray, filter);
+    
+    //Console.WriteLine(castResult.Distance);
+    if (castResult.Distance > 800.0)
+    {
+      pray.Transform.Scale = Real3(0.25,0.25,0.5);
+      pray.Transform.LocalTranslation = this.RayStartPos;
+      return;
+    }
+      pray.Transform.Scale = Real3(0.25,0.25, castResult.Distance);
+      
+    pray.Transform.LocalTranslation = this.RayStartPos + Real3(0,0,-castResult.Distance/6);
+    
+  }
+}

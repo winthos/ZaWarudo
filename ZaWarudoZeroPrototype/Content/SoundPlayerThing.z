@@ -1,0 +1,33 @@
+//this is some sound effect logic that is mainly placeholder
+class Bakana : ZilchEvent
+{
+}
+
+class DioShout : ZilchEvent
+{
+}
+
+class SoundPlayerThing : ZilchComponent
+{
+    function Initialize(init : CogInitializer)
+    {
+        //Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+        Zero.Connect(this.GameSession, "THE WORLD", this.SoundEffect);
+        Zero.Connect(this.GameSession, "Bakana!", this.BakanaSound);
+    }
+    
+    function SoundEffect(event : DioShout)
+    {
+        //Console.WriteLine("should be shouting");
+        this.Space.FindObjectByName("Camera").SoundEmitter.PlayCue(SoundCue.Find("THEWORLD"));
+    }
+    
+    function BakanaSound(event : Bakana)
+    {
+        this.Space.FindObjectByName("Camera").SoundEmitter.PlayCue(SoundCue.Find("Bakana"));
+    }
+
+    function OnLogicUpdate(event : UpdateEvent)
+    {
+    }
+}

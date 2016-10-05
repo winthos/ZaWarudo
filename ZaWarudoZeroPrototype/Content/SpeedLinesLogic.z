@@ -1,0 +1,28 @@
+//logic for when the speedline effect needs to show up on screen
+class SpeedLinesLogic : ZilchComponent
+{
+    var Camera : Cog = null;
+    function Initialize(init : CogInitializer)
+    {
+        Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+         this.Camera = this.Space.FindObjectByName("Camera");
+    }
+
+    function OnLogicUpdate(event : UpdateEvent)
+    {
+        //if time is flowing normally
+        if(this.Camera.ZeroCameraController.TimeIsFlowingNormally == false ||
+        this.Camera.ZeroCameraController.EnemyHasStoppedTime == true)
+        {
+            //Console.WriteLine("Huh?");
+            this.Owner.Sprite.Visible = false;
+        }
+        
+        if ((this.Camera.ZeroCameraController.TimeIsFlowingNormally == true && this.Camera.ZeroCameraController.EnemyHasStoppedTime == false) ||
+        this.Camera.ZeroCameraController.LeftMouseDown == true)
+        {
+            this.Owner.Sprite.Visible = true;
+        }
+        
+    }
+}

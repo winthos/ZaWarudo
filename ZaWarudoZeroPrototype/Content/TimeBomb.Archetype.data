@@ -1,0 +1,84 @@
+Cog = 
+{
+	LinkId = 
+	{
+		uint Id = 1,
+	},
+	Named = 
+	{
+		string Name = "Enemy",
+	},
+	Archetyped = 
+	{
+		string Name = "578a93139521075f:TimeBomb",
+	},
+	Transform = 
+	{
+		Vec3 Translation = [0, 0, 0],
+		Vec3 Scale = [1, 1, 1],
+		Quat Rotation = [0, 0, 0, 1],
+	},
+	Model = 
+	{
+		bool Visible = true,
+		bool VisibilityCulling = true,
+		bool VisibilityEvents = true,
+		bool CastShadows = true,
+		string MaterialName = "57e347cdb4c922cc:Red",
+		string MeshName = "4de0354322b376ae:Sphere",
+		Vec4 Color = [1, 1, 1, 0.899999976],
+	},
+	RigidBody = 
+	{
+		bool Static = false,
+		bool Asleep = false,
+		bool Kinematic = true,
+		bool RotationLocked = false,
+		bool Mode2D = false,
+		bool AllowSleep = true,
+		bool Inherit2DMode = true,
+		Vec3 Velocity = [0, 0, 0],
+		Vec3 AngularVelocity = [0, 0, 0],
+	},
+	SphereCollider = 
+	{
+		bool Ghost = false,
+		bool SendsMessages = true,
+		bool Seamless = true,
+		string MaterialName = "4de020863e872da8:DefaultPhysicsMaterial",
+		string SerializedGroupName = "5793d54c3b229827:Enemy",
+		Vec3 Offset = [0, 0, 0],
+		float Radius = 1,
+	},
+	EnemyController = 
+	{
+		float MovementSpeed = 0.100000001,
+		float AmountStoppedTime = 10,
+	},
+	Hierarchy = 
+	{
+		ArchetypeInstance = 
+		{
+			string Name = "5787dd5da2f5cc0d:TimeBar",
+			LinkId = 
+			{
+				uint Id = 2,
+			},
+			Transform = 
+			{
+				Vec3 Translation = [-0.797803402, 1.47511697, 0],
+				Vec3 Scale = [1.5, 0.330000013, 1],
+				Quat Rotation = [0, 0, 0, 1],
+			},
+			Area = 
+			{
+				Vec2 Size = [1, 1],
+				Location Origin = CenterLeft,
+			},
+			Named = 
+			{
+				string Name = "TimeBar",
+			},
+		},
+	},
+},
