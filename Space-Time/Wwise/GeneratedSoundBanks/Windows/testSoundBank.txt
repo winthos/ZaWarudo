@@ -2,5 +2,5 @@ Event	ID	Name			Wwise Object Path	Notes
 	2272535601	tempEvent			\Default Work Unit\tempEvent	
 
 In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
-	211524629	Temp Music	C:\Users\Kaila Harris\Desktop\temp\Wwise\.cache\Windows\SFX\Temp_Loop_01_4B8CC0C5.wem		\Actor-Mixer Hierarchy\Default Work Unit\Temp Music		904000
+	211524629	Temp Music	C:\Users\Kaila Harris\repos\ZaWarudo\Space-Time\Wwise\.cache\Windows\SFX\Temp_Loop_01_4B8CC0C5.wem		\Actor-Mixer Hierarchy\Default Work Unit\Temp Music		904000
 
