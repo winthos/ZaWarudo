@@ -19,6 +19,11 @@ public class AsteroidSpawner : MonoBehaviour
   [SerializeField]
   float SpawnTimeVariance = 2.0f;
   
+  float Spawns = 0;
+  
+  [SerializeField]
+  int BigSpawn = 6;
+  
   GameObject LevelGlobals;
   GameObject CentrePoint;
   GameObject Player;
@@ -45,6 +50,9 @@ public class AsteroidSpawner : MonoBehaviour
   // Update is called once per frame
   void Update () 
   {
+    if (Camcontrol.GetPTime() || Camcontrol.GetETime())
+      return;
+    
     SpawnTimer -= Time.deltaTime;
     if (SpawnTimer <= 0.0)
     {
@@ -56,12 +64,14 @@ public class AsteroidSpawner : MonoBehaviour
   
   public void SpawnTimeCalc()
   {
-    SpawnTimer = SpawnTime + Random.Range(-SpawnTimeVariance, SpawnTimeVariance);
+    int stacks = Player.GetComponent<PlayerMovement>().SpeedStacks;
+    SpawnTimer = Mathf.Clamp(SpawnTime + Random.Range(-SpawnTimeVariance - stacks/2, SpawnTimeVariance), 0.1f, 10.0f);
   }
   
   public void LaunchAsteroid()
   {
-    Vector3 SpawnPos = CentrePoint.transform.position + CentrePoint.transform.forward*100;
+    Vector3 SpawnPos = CentrePoint.transform.position + CentrePoint.transform.forward*500;
+    
     float offsetx = (CentrePoint.transform.right.x + CentrePoint.transform.up.x) * 5.0f;
     float offsety = (CentrePoint.transform.right.y + CentrePoint.transform.up.y) * 5.0f;
     float offsetz = (CentrePoint.transform.right.z + CentrePoint.transform.up.z) * 5.0f;
@@ -74,6 +84,11 @@ public class AsteroidSpawner : MonoBehaviour
     
     int CreationChance = (int)Mathf.Clamp(Random.Range(0.0f,100.0f + Player.GetComponent<PlayerMovement>().SpeedStacks),
                                           0, 300); //max craziness limiter to prevent only large asteroids from spawning
+    if (Spawns % BigSpawn == 0)
+    {
+      CreationChance += 50;
+    }
+    
     /*
       GameObject Asteroid = Instantiate([prefab], [position], Quaternion.identity);
     */
