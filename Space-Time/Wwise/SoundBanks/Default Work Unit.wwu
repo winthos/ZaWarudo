@@ -15,6 +15,13 @@
 					<ObjectExclusionList/>
 					<GameSyncExclusionList/>
 				</SoundBank>
+				<SoundBank Name="stopTimeBank" ID="{B8B7EB65-7D13-4C07-9DA0-491E7F3D95C4}">
+					<ObjectInclusionList>
+						<ObjectRef Name="timeStopSound" ID="{A77B0A7C-3321-4AF7-941C-16DF76713942}" WorkUnitID="{844181E0-4505-49CF-AA72-A66D74F884A5}" Filter="7" Origin="Manual"/>
+					</ObjectInclusionList>
+					<ObjectExclusionList/>
+					<GameSyncExclusionList/>
+				</SoundBank>
 			</ChildrenList>
 		</WorkUnit>
 	</SoundBanks>
