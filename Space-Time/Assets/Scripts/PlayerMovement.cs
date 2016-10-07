@@ -44,7 +44,7 @@ public class PlayerMovement : MonoBehaviour
       //allow WASD input yay
       dir = transform.position;
       
-      if (Input.anyKey)
+      if (MovementKeyDown() && !Camcontrol.IsTimeTransitioning())
       {
         //Vector3 up = transform.position * transform.up;
         //Vector3 centrup = CentrePoint.transform.position * transform.up;
@@ -174,6 +174,11 @@ public class PlayerMovement : MonoBehaviour
   void RecalculateBounds()
   {
     
+  }
+  
+  bool MovementKeyDown()
+  {
+    return Input.GetKey("w") || Input.GetKey("a") || Input.GetKey("s") || Input.GetKey("d");
   }
   
   public void ResetDashDestination()
