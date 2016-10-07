@@ -38,13 +38,13 @@ public class PlayerMovement : MonoBehaviour
   void Update () 
   {
       // if we're in normal time
-    if (!Camcontrol.GetPTime() && !Camcontrol.GetETime())
+    if (!Camcontrol.GetPTime() && !Camcontrol.GetETime() && !Camcontrol.IsTimeTransitioning())
     {
       Vector3 dir = new Vector3();
       //allow WASD input yay
       dir = transform.position;
       
-      if (MovementKeyDown() && !Camcontrol.IsTimeTransitioning())
+      if (MovementKeyDown())
       {
         //Vector3 up = transform.position * transform.up;
         //Vector3 centrup = CentrePoint.transform.position * transform.up;
@@ -67,9 +67,13 @@ public class PlayerMovement : MonoBehaviour
         {
           dir += transform.right * MovementSpeed;
         }
+        else if (Input.GetKey("space")) // if middle mouse
+        {
+          dir = CentrePoint.transform.position;
+        }
       }
-      else
-        dir = CentrePoint.transform.position;
+      //else
+       // dir = CentrePoint.transform.position;
       
       
       transform.position = Vector3.MoveTowards(transform.position, dir, Time.deltaTime * MovementSpeed);
@@ -120,6 +124,11 @@ public class PlayerMovement : MonoBehaviour
         {
           DashDestination = CentrePoint.transform.Find("6").transform.position;
           DashTo = CentrePoint.transform.Find("6").gameObject;
+        }
+        else if (Input.GetKeyDown("space")) //5
+        {
+          DashDestination = CentrePoint.transform.position;
+          DashTo = CentrePoint;
         }
         moveTime = Time.time;
       }
@@ -178,7 +187,7 @@ public class PlayerMovement : MonoBehaviour
   
   bool MovementKeyDown()
   {
-    return Input.GetKey("w") || Input.GetKey("a") || Input.GetKey("s") || Input.GetKey("d");
+    return Input.GetKey("w") || Input.GetKey("a") || Input.GetKey("s") || Input.GetKey("d") || Input.GetKey("space");
   }
   
   public void ResetDashDestination()
