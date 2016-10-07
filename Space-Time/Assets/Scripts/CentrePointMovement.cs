@@ -9,12 +9,16 @@ public class CentrePointMovement : MonoBehaviour
   GameObject LevelGlobals;
   GameObject Camera;
   CameraController Camcontrol;
+  GameObject Player;
+  [SerializeField]
+  float StackGainMultiplier = 1.0f;
     // Use this for initialization
   void Start () 
   {
     LevelGlobals = GameObject.FindWithTag("Globals");
     Camera = LevelGlobals.GetComponent<LevelGlobals>().Camera;
     Camcontrol = Camera.GetComponent<CameraController>();
+    Player = LevelGlobals.GetComponent<LevelGlobals>().Player;
   }
     
     // Update is called once per frame
@@ -22,8 +26,8 @@ public class CentrePointMovement : MonoBehaviour
   {
     if (!Camcontrol.GetPTime() && !Camcontrol.GetETime())
     {
-      transform.position += transform.forward * MovementSpeed;
-       LevelGlobals.GetComponent<LevelGlobals>().Camera.transform.position += transform.forward * MovementSpeed;
+      transform.position += transform.forward * GetTrueSpeed();
+      LevelGlobals.GetComponent<LevelGlobals>().Camera.transform.position += transform.forward * GetTrueSpeed();
     }  
     //Moving forward during normal time now and forever
   }
@@ -31,5 +35,10 @@ public class CentrePointMovement : MonoBehaviour
   public float GetMovementSpeed()
   {
     return MovementSpeed;
+  }
+  
+  float GetTrueSpeed()
+  {
+    return Mathf.Clamp(MovementSpeed * Player.GetComponent<PlayerMovement>().SpeedStacks * StackGainMultiplier,MovementSpeed,100);
   }
 }
