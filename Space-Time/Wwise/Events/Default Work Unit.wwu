@@ -36,6 +36,17 @@
 						</Action>
 					</ChildrenList>
 				</Event>
+				<Event Name="timeStopSound" ID="{A77B0A7C-3321-4AF7-941C-16DF76713942}">
+					<ChildrenList>
+						<Action Name="Play" ID="{CA9574A0-6450-41B5-BAF6-E38883E651A1}" ShortID="833476365" Type="Play" Scope="One" Global="false">
+							<ElementList>
+								<Element ID="{1CABFEA0-F787-4ED0-9451-C66A30F8C113}" Global="false">
+									<ObjectRef Name="TimeStopSoundTest" ID="{5F25938A-A42B-4DAD-9DC7-476DF5EEFE2B}" WorkUnitID="{FF3EED52-C1D4-4196-99CA-49F9ADC46132}"/>
+								</Element>
+							</ElementList>
+						</Action>
+					</ChildrenList>
+				</Event>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>
