@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SoundBanksInfo Platform="Windows" BasePlatform="Windows" SchemaVersion="11" SoundbankVersion="118">
 	<RootPaths>
-		<ProjectRoot>C:\Users\Kaila Harris\Desktop\temp\Wwise\</ProjectRoot>
-		<SourceFilesRoot>C:\Users\Kaila Harris\Desktop\temp\Wwise\.cache\Windows\</SourceFilesRoot>
-		<SoundBanksRoot>C:\Users\Kaila Harris\Desktop\temp\Wwise\GeneratedSoundBanks\Windows\</SoundBanksRoot>
+		<ProjectRoot>C:\Users\Kaila Harris\repos\ZaWarudo\Space-Time\Wwise\</ProjectRoot>
+		<SourceFilesRoot>C:\Users\Kaila Harris\repos\ZaWarudo\Space-Time\Wwise\.cache\Windows\</SourceFilesRoot>
+		<SoundBanksRoot>C:\Users\Kaila Harris\repos\ZaWarudo\Space-Time\Wwise\GeneratedSoundBanks\Windows\</SoundBanksRoot>
 		<ExternalSourcesInputFile></ExternalSourcesInputFile>
-		<ExternalSourcesOutputRoot>C:\Users\Kaila Harris\Desktop\temp\Wwise\GeneratedSoundBanks\Windows\</ExternalSourcesOutputRoot>
+		<ExternalSourcesOutputRoot>C:\Users\Kaila Harris\repos\ZaWarudo\Space-Time\Wwise\GeneratedSoundBanks\Windows\</ExternalSourcesOutputRoot>
 	</RootPaths>
 	<DialogueEvents/>
 	<StreamedFiles/>
@@ -32,6 +32,20 @@
 				<File Id="211524629" Language="SFX">
 					<ShortName>Temp_Loop_01.wav</ShortName>
 					<Path>SFX\Temp_Loop_01_4B8CC0C5.wem</Path>
+				</File>
+			</IncludedMemoryFiles>
+		</SoundBank>
+		<SoundBank Id="3348718080" Language="SFX">
+			<ObjectPath>\SoundBanks\Default Work Unit\stopTimeBank</ObjectPath>
+			<ShortName>stopTimeBank</ShortName>
+			<Path>stopTimeBank.bnk</Path>
+			<IncludedEvents>
+				<Event Id="2983522775" Name="timeStopSound" ObjectPath="\Events\Default Work Unit\timeStopSound"/>
+			</IncludedEvents>
+			<IncludedMemoryFiles>
+				<File Id="484017071" Language="SFX">
+					<ShortName>TimeStopSoundTest.wav</ShortName>
+					<Path>SFX\TimeStopSoundTest_9E69E797.wem</Path>
 				</File>
 			</IncludedMemoryFiles>
 		</SoundBank>
