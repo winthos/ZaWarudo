@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SoundBanksInfo Platform="Windows" BasePlatform="Windows" SchemaVersion="11" SoundbankVersion="118">
+	<RootPaths>
+		<ProjectRoot>C:\Users\Kaila Harris\Desktop\temp\Wwise\</ProjectRoot>
+		<SourceFilesRoot>C:\Users\Kaila Harris\Desktop\temp\Wwise\.cache\Windows\</SourceFilesRoot>
+		<SoundBanksRoot>C:\Users\Kaila Harris\Desktop\temp\Wwise\GeneratedSoundBanks\Windows\</SoundBanksRoot>
+		<ExternalSourcesInputFile></ExternalSourcesInputFile>
+		<ExternalSourcesOutputRoot>C:\Users\Kaila Harris\Desktop\temp\Wwise\GeneratedSoundBanks\Windows\</ExternalSourcesOutputRoot>
+	</RootPaths>
+	<DialogueEvents/>
+	<StreamedFiles/>
+	<MediaFilesNotInAnyBank/>
+	<SoundBanks>
+		<SoundBank Id="623086306" Language="SFX">
+			<ObjectPath>\SoundBanks\Default Work Unit\Sound</ObjectPath>
+			<ShortName>Sound</ShortName>
+			<Path>Sound.bnk</Path>
+		</SoundBank>
+		<SoundBank Id="1355168291" Language="SFX">
+			<ObjectPath>Init</ObjectPath>
+			<ShortName>Init</ShortName>
+			<Path>Init.bnk</Path>
+		</SoundBank>
+		<SoundBank Id="1831431028" Language="SFX">
+			<ObjectPath>\SoundBanks\Default Work Unit\testSoundBank</ObjectPath>
+			<ShortName>testSoundBank</ShortName>
+			<Path>testSoundBank.bnk</Path>
+			<IncludedEvents>
+				<Event Id="2272535601" Name="tempEvent" ObjectPath="\Events\Default Work Unit\tempEvent"/>
+			</IncludedEvents>
+			<IncludedMemoryFiles>
+				<File Id="211524629" Language="SFX">
+					<ShortName>Temp_Loop_01.wav</ShortName>
+					<Path>SFX\Temp_Loop_01_4B8CC0C5.wem</Path>
+				</File>
+			</IncludedMemoryFiles>
+		</SoundBank>
+	</SoundBanks>
+</SoundBanksInfo>
