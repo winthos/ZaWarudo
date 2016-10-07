@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{844181E0-4505-49CF-AA72-A66D74F884A5}" SchemaVersion="72">
+	<Events>
+		<WorkUnit Name="Default Work Unit" ID="{844181E0-4505-49CF-AA72-A66D74F884A5}" PersistMode="Standalone">
+			<ChildrenList>
+				<Event Name="Play_Temp_SFX" ID="{3C022673-8735-4981-9B86-87E2DCB08DC0}">
+					<ChildrenList>
+						<Action Name="Play" ID="{80D8292B-A512-4699-9FC7-B7B395FFD1FB}" ShortID="80270651" Type="Play" Scope="One" Global="false">
+							<ElementList>
+								<Element ID="{75E2BE96-51F5-42B5-A729-1E6573EFB3FD}" Global="false">
+									<ObjectRef Name="Temp SFX" ID="{9B6196E4-93D4-4BCC-9616-776FCF5B56ED}" WorkUnitID="{FF3EED52-C1D4-4196-99CA-49F9ADC46132}"/>
+								</Element>
+							</ElementList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Temp_Music" ID="{8FF75698-F871-4E7D-8E53-4E1CFFB23832}">
+					<ChildrenList>
+						<Action Name="Play" ID="{3B70D7C1-9C41-4E26-9DD1-EBD3EF1B0560}" ShortID="37701928" Type="Play" Scope="One" Global="false">
+							<ElementList>
+								<Element ID="{02C6C70C-1C3A-42FB-9916-9846C3A61ABE}" Global="false">
+									<ObjectRef Name="Temp Music" ID="{8C345B6F-5371-4272-B25E-3808D665215F}" WorkUnitID="{FF3EED52-C1D4-4196-99CA-49F9ADC46132}"/>
+								</Element>
+							</ElementList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="tempEvent" ID="{AD46F261-A148-48B2-8A62-68249A9BA65A}">
+					<ChildrenList>
+						<Action Name="Play" ID="{A8C4F8E6-FD88-4716-B1F8-9828AFE8D05C}" ShortID="1069549254" Type="Play" Scope="One" Global="false">
+							<ElementList>
+								<Element ID="{99AAA5C2-AAB4-4CE8-8686-003122A73EA5}" Global="false">
+									<ObjectRef Name="Temp Music" ID="{8C345B6F-5371-4272-B25E-3808D665215F}" WorkUnitID="{FF3EED52-C1D4-4196-99CA-49F9ADC46132}"/>
+								</Element>
+							</ElementList>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>
