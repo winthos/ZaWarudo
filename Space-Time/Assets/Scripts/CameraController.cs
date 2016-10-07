@@ -83,7 +83,30 @@ public class CameraController : MonoBehaviour
       
       CentrePoint.transform.rotation = Rotation;
       
+      /*
+      public void ResetRoll()
+        {
+            // Calculate rotation
+            Vector3 rightNoY = Vector3.Cross(Vector3.up, transform.forward);
+            rightNoY.y = 0;
+            Quaternion rotator = Quaternion.FromToRotation(transform.right, rightNoY);
+
+            // Apply rotation
+            transform.rotation = Quaternion.Slerp(transform.rotation, rotator * transform.rotation, Time.deltaTime);
+        }
+        
+                public void ResetOrientation()
+        {
+            // Projected forward
+            Vector3 forwardNoY = transform.forward;
+            forwardNoY.y = 0;
+            forwardNoY.Normalize();
+
+            // Apply projected forward
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(forwardNoY), Time.deltaTime);
+        }
       
+      */
       
       if (Input.GetMouseButton(0) && LevelGlobals.GetComponent<LevelGlobals>().Debugging) // if left mouse is held
       {
