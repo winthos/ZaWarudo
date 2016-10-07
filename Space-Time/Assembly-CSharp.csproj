@@ -55,6 +55,7 @@
      <Compile Include="Assets\Scripts\PlayerMovement.cs" />
      <Compile Include="Assets\Scripts\RiftSpawner.cs" />
      <Compile Include="Assets\Scripts\TheLightsInTheSky.cs" />
+     <Compile Include="Assets\Scripts\TimeStopFX.cs" />
      <Compile Include="Assets\Wwise\Deployment\API\Generated\Common\AKRESULT.cs" />
      <Compile Include="Assets\Wwise\Deployment\API\Generated\Common\AkActionOnEventType.cs" />
      <Compile Include="Assets\Wwise\Deployment\API\Generated\Common\AkAudioFormat.cs" />
@@ -162,6 +163,7 @@
      <None Include="Assets\StreamingAssets\desc.txt" />
      <None Include="Assets\StreamingAssets\Audio\GeneratedSoundBanks\Windows\testSoundBank.txt" />
      <None Include="Assets\StreamingAssets\Audio\GeneratedSoundBanks\Windows\Init.txt" />
+     <None Include="Assets\StreamingAssets\Audio\GeneratedSoundBanks\Windows\stopTimeBank.txt" />
      <None Include="Assets\Wwise\Readme.txt" />
      <None Include="Assets\Wwise\Version.txt" />
  <Reference Include="UnityEngine.UI">

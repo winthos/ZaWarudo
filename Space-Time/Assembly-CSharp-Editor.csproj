@@ -86,6 +86,7 @@
      <None Include="Assets\StreamingAssets\desc.txt" />
      <None Include="Assets\StreamingAssets\Audio\GeneratedSoundBanks\Windows\testSoundBank.txt" />
      <None Include="Assets\StreamingAssets\Audio\GeneratedSoundBanks\Windows\Init.txt" />
+     <None Include="Assets\StreamingAssets\Audio\GeneratedSoundBanks\Windows\stopTimeBank.txt" />
      <None Include="Assets\Wwise\Readme.txt" />
      <None Include="Assets\Wwise\Version.txt" />
  <Reference Include="UnityEditor.Advertisements">
