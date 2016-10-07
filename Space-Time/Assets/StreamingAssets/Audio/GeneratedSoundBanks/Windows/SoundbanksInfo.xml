@@ -3,7 +3,7 @@
 	<RootPaths>
 		<ProjectRoot>C:\Users\Kaila Harris\repos\ZaWarudo\Space-Time\Wwise\</ProjectRoot>
 		<SourceFilesRoot>C:\Users\Kaila Harris\repos\ZaWarudo\Space-Time\Wwise\.cache\Windows\</SourceFilesRoot>
-		<SoundBanksRoot>C:\Users\Kaila Harris\repos\ZaWarudo\Space-Time\Wwise\GeneratedSoundBanks\Windows\</SoundBanksRoot>
+		<SoundBanksRoot>C:\Users\Kaila Harris\repos\ZaWarudo\Space-Time\Assets\StreamingAssets\Audio\GeneratedSoundBanks\Windows\</SoundBanksRoot>
 		<ExternalSourcesInputFile></ExternalSourcesInputFile>
 		<ExternalSourcesOutputRoot>C:\Users\Kaila Harris\repos\ZaWarudo\Space-Time\Wwise\GeneratedSoundBanks\Windows\</ExternalSourcesOutputRoot>
 	</RootPaths>
