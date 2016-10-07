@@ -66,15 +66,16 @@ public class CameraController : MonoBehaviour
       if (Vector3.Distance(Player.transform.position, CentrePoint.transform.position) > 0.01)
         transform.LookAt((Player.transform.position + CentrePoint.transform.position)/2);
       else
-      {
-        transform.LookAt(CentrePoint.transform.position );
-        if (IsTimeTransitioning())
+        transform.LookAt(CentrePoint.transform.position);
+      
+      if (IsTimeTransitioning())
         {
           transform.position = Vector3.Lerp(transform.position, CamSnapBackDistance, (Time.time - lerpTime) * CamSnapSpeed);
-          if (Vector3.Distance(transform.position, CamSnapBackDistance) < 0.01)
+          if (Vector3.Distance(transform.position, CamSnapBackDistance) < 0.01f)
+          {
             CamSnapBackDistance = Vector3.zero;
+          }
         }
-      }
     }
     else if (GetPTime())
     {
@@ -84,13 +85,15 @@ public class CameraController : MonoBehaviour
       
         //Clamp the y-rotation so we don't have weird circle camera shenanigans 
       y = ClampAngle(y, -89f, 89f); 
+      
+   
  
       transform.LookAt(CentrePoint.transform.position);
 
       Quaternion Rotation = Quaternion.Euler(y, x, 0);
       
       Vector3 NegativeDistance = new Vector3(0.0f, 0.0f, -Distance);
-      Vector3 Pos = Rotation * NegativeDistance + CentrePoint.transform.position + (CentrePoint.transform.up * 1.65f);
+      Vector3 Pos = Rotation * NegativeDistance + CentrePoint.transform.position + (CentrePoint.transform.up * 1.15f);
       
       //transform.rotation = Rotation;
       transform.rotation = Quaternion.Slerp(transform.rotation, Rotation, (Time.time - lerpTime) *CamSnapSpeed); //1.5f
@@ -98,33 +101,11 @@ public class CameraController : MonoBehaviour
       //transform.position = Pos;
       transform.position = Vector3.Slerp(transform.position, Pos, (Time.time - lerpTime) *CamSnapSpeed);
       
-      //CentrePoint.transform.rotation = Rotation;
+      
+      CentrePoint.transform.rotation = Rotation;
       //CentrePoint.transform.rotation = Quaternion.Slerp(CentrePoint.transform.rotation, Rotation, Time.deltaTime/2);
       
-      /*
-      public void ResetRoll()
-        {
-            // Calculate rotation
-            Vector3 rightNoY = Vector3.Cross(Vector3.up, transform.forward);
-            rightNoY.y = 0;
-            Quaternion rotator = Quaternion.FromToRotation(transform.right, rightNoY);
-
-            // Apply rotation
-            transform.rotation = Quaternion.Slerp(transform.rotation, rotator * transform.rotation, Time.deltaTime);
-        }
-        
-                public void ResetOrientation()
-        {
-            // Projected forward
-            Vector3 forwardNoY = transform.forward;
-            forwardNoY.y = 0;
-            forwardNoY.Normalize();
-
-            // Apply projected forward
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(forwardNoY), Time.deltaTime);
-        }
-      
-      */
+     
       /*
       if (Input.GetMouseButton(0) && LevelGlobals.GetComponent<LevelGlobals>().Debugging) // if left mouse is held
       {
@@ -187,7 +168,8 @@ public class CameraController : MonoBehaviour
         // if not in time stop, filter on
         
       hudctrl.GetComponent<HUDController>().TimeSet(1);
-      
+      CentrePoint.transform.position = Player.transform.position;
+      Player.transform.position = CentrePoint.transform.position;
       
     }
     else
@@ -197,7 +179,9 @@ public class CameraController : MonoBehaviour
      
     if (PTimeStop)
     {
+      
       CentrePoint.transform.LookAt(CentrePoint.transform.position + transform.forward); 
+      
       //transform.position += transform.up * 0.55f;
       CamSnapBackDistance = transform.position + transform.up * 0.55f;
       
