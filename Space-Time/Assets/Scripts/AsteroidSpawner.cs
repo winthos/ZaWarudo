@@ -23,6 +23,9 @@ public class AsteroidSpawner : MonoBehaviour
   
   [SerializeField]
   int BigSpawn = 6;
+
+  [SerializeField]
+  int CreationChanceModifier = 50;
   
   GameObject LevelGlobals;
   GameObject CentrePoint;
@@ -56,9 +59,14 @@ public class AsteroidSpawner : MonoBehaviour
     SpawnTimer -= Time.deltaTime;
     if (SpawnTimer <= 0.0)
     {
-      LaunchAsteroid();
+      LaunchAsteroid(0);
       SpawnTimeCalc();
     }
+
+    if(Input.GetKeyDown("j"))
+        {
+            LaunchAsteroid(3);
+        }
   
   }
   
@@ -68,7 +76,7 @@ public class AsteroidSpawner : MonoBehaviour
     SpawnTimer = Mathf.Clamp(SpawnTime + Random.Range(-SpawnTimeVariance - stacks/2, SpawnTimeVariance), 0.1f, 10.0f);
   }
   
-  public void LaunchAsteroid()
+  public void LaunchAsteroid(int spawntype) // 0 = normal, 1 = small, 2 = medium, 3 = large
   {
     Vector3 SpawnPos = CentrePoint.transform.position + CentrePoint.transform.forward*500;
     
@@ -86,8 +94,14 @@ public class AsteroidSpawner : MonoBehaviour
                                           0, 300); //max craziness limiter to prevent only large asteroids from spawning
     if (Spawns % BigSpawn == 0)
     {
-      CreationChance += 50;
+      CreationChance += CreationChanceModifier;
     }
+        if (spawntype == 1)
+            CreationChance = 0;
+        else if (spawntype == 2)
+            CreationChance = 76;
+        else if (spawntype == 3)
+            CreationChance = 151;
     
     /*
       GameObject Asteroid = Instantiate([prefab], [position], Quaternion.identity);
